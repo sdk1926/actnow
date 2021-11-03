@@ -1,6 +1,5 @@
 package com.sdk.actnow.oauth;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -11,12 +10,11 @@ import org.springframework.web.client.RestTemplate;
 
 public class KakaoConnection {
 
+    private static final String CLIENT_ID = KakakoConfig.CLIENT_ID;
 
-    private static final String CLIENT_ID = "f69e56958014d271373defb6cd2bbdc7";
+    private static final String CLIENT_SECRET = KakakoConfig.CLIENT_SECRET;
 
-    private static final String CLIENT_SECRET = "Mh397yRDTbiC9LHkuI8xLld326FOWiSD";
-
-    private static final String REDIRECT_URL = "http://127.0.0.1:8080/api/v1/log-in";
+    private static final String REDIRECT_URL = KakakoConfig.REDIRECT_URL;
 
     public MultiValueMap<String, String> generateParam(String code) {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
