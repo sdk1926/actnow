@@ -19,8 +19,8 @@ public class KakaoLoginService {
 
     private final ObjectMapper objectMapper;
     private final UsersRepository usersRepository;
-    private KakaoConnection kakaoConnection;
-    private Jwt jwt;
+    private KakaoConnection kakaoConnection = new KakaoConnection();
+    private Jwt jwt = new Jwt();
 
     @Transactional
     public JwtDto save(String code){

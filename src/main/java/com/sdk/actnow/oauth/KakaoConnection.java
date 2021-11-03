@@ -11,17 +11,17 @@ import org.springframework.web.client.RestTemplate;
 
 public class KakaoConnection {
 
-    @Value("${kakao.cliend_id}")
-    private static String CLIEND_ID;
-    @Value("${kakao.client_secret}")
-    private static String CLIENT_SECRET = "";
-    @Value("${kakao.redirect_uri}")
-    private static String REDIRECT_URL = "";
+
+    private static final String CLIENT_ID = "f69e56958014d271373defb6cd2bbdc7";
+
+    private static final String CLIENT_SECRET = "Mh397yRDTbiC9LHkuI8xLld326FOWiSD";
+
+    private static final String REDIRECT_URL = "http://127.0.0.1:8080/api/v1/log-in";
 
     public MultiValueMap<String, String> generateParam(String code) {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        params.add("grant_type", "authorized_code");
-        params.add("client_id", CLIEND_ID);
+        params.add("grant_type", "authorization_code");
+        params.add("client_id", CLIENT_ID);
         params.add("redirect_uri", REDIRECT_URL);
         params.add("code", code);
         params.add("client_secret", CLIENT_SECRET);
@@ -30,7 +30,7 @@ public class KakaoConnection {
 
     public HttpEntity<MultiValueMap<String, String>> generateProfileRequest(OauthToken oauthToken) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Authorization", "Bearer"+oauthToken.getAccess_token());
+        headers.add("Authorization", "Bearer "+oauthToken.getAccess_token());
         headers.add("Content-type","application/x-www-form-urlencoded;charset=utf-8");
         return new HttpEntity<>(headers);
     }
