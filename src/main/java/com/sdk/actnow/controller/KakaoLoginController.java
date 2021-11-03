@@ -16,4 +16,5 @@ public class KakaoLoginController {
     @GetMapping("/api/v1/log-in")
     public JwtDto save(@RequestParam String code){
         return kakaoLoginService.save(code);}
+
 }

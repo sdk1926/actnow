@@ -13,19 +13,20 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.sdk.actnow.oauth.KakaoConnection.*;
+
 @RequiredArgsConstructor
 @Service
 public class KakaoLoginService {
 
     private final ObjectMapper objectMapper;
     private final UsersRepository usersRepository;
-    private KakaoConnection kakaoConnection = new KakaoConnection();
     private Jwt jwt = new Jwt();
 
     @Transactional
     public JwtDto save(String code){
-        OauthToken accessToken = kakaoConnection.requestAuthCode(kakaoConnection.generateAuthCodeRequest(code)).getBody();
-        String response = kakaoConnection.requestProfile(kakaoConnection.generateProfileRequest(accessToken)).getBody();
+        OauthToken accessToken = requestAuthCode(generateAuthCodeRequest(code)).getBody();
+        String response = requestProfile(generateProfileRequest(accessToken)).getBody();
         KakaoProfile profile = null;
         try {
             profile = objectMapper.readValue(response, KakaoProfile.class);
@@ -33,15 +34,18 @@ public class KakaoLoginService {
             e.printStackTrace();
         }
         int id = profile.getId();
-        Users user = Users.builder()
-                .snsId(id)
-                .email(profile.getKakao_account().getEmail())
-                .build();
-        usersRepository.save(user);
-        String token = jwt.makeJwtToken(user.getId());
+        if (usersRepository.findBySnsId(id).isEmpty()) {
+            Users user = Users.builder()
+                    .snsId(id)
+                    .email(profile.getKakao_account().getEmail())
+                    .build();
+            usersRepository.save(user);
+        }
+        String token = jwt.makeJwtToken(id);
         JwtDto jwtDto = new JwtDto();
         jwtDto.setMessage("success");
         jwtDto.setToken(token);
         return jwtDto;
     }
+
 }

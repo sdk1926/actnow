@@ -16,7 +16,7 @@ public class KakaoConnection {
 
     private static final String REDIRECT_URL = KakakoConfig.REDIRECT_URL;
 
-    public MultiValueMap<String, String> generateParam(String code) {
+    public static MultiValueMap<String, String> generateParam(String code) {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("grant_type", "authorization_code");
         params.add("client_id", CLIENT_ID);
@@ -26,20 +26,21 @@ public class KakaoConnection {
         return params;
     }
 
-    public HttpEntity<MultiValueMap<String, String>> generateProfileRequest(OauthToken oauthToken) {
+    public static HttpEntity<MultiValueMap<String, String>> generateProfileRequest(OauthToken oauthToken) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Bearer "+oauthToken.getAccess_token());
+        System.out.println(oauthToken.getAccess_token());
         headers.add("Content-type","application/x-www-form-urlencoded;charset=utf-8");
         return new HttpEntity<>(headers);
     }
 
-    public HttpEntity<MultiValueMap<String,String>> generateAuthCodeRequest(String code) {
+    public static HttpEntity<MultiValueMap<String,String>> generateAuthCodeRequest(String code) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
         return  new HttpEntity<>(generateParam(code), headers);
     }
 
-    public ResponseEntity<String> requestProfile(HttpEntity request) {
+    public static ResponseEntity<String> requestProfile(HttpEntity request) {
         RestTemplate restTemplate = new RestTemplate();
         return restTemplate.exchange(
                 "https://kapi.kakao.com/v2/user/me",
@@ -49,7 +50,7 @@ public class KakaoConnection {
         );
     }
 
-    public ResponseEntity<OauthToken> requestAuthCode(HttpEntity request) {
+    public static ResponseEntity<OauthToken> requestAuthCode(HttpEntity request) {
         RestTemplate restTemplate = new RestTemplate();
         return restTemplate.exchange(
                 "https://kauth.kakao.com/oauth/token",
@@ -58,5 +59,6 @@ public class KakaoConnection {
                 OauthToken.class
         );
     }
+
     
 }
