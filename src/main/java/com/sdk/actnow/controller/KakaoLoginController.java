@@ -1,5 +1,6 @@
 package com.sdk.actnow.controller;
 
+import com.sdk.actnow.dto.JwtDto;
 import com.sdk.actnow.service.KakaoLoginService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,5 +14,5 @@ public class KakaoLoginController {
     private final KakaoLoginService kakaoLoginService;
 
     @GetMapping("/api/v1/log-in")
-    public String save(@RequestParam String code){return kakaoLoginService.save(code);}
+    public JwtDto save(@RequestParam String code){return kakaoLoginService.save(code);}
 }

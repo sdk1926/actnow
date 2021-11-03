@@ -8,7 +8,7 @@ public class Jwt {
 
     private static final String secretKey = "secretKey";
 
-    public String makeJwtToken(int id) {
+    public String makeJwtToken(long id) {
         Date now = new Date();
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DATE,7);

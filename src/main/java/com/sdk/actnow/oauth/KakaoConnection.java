@@ -35,7 +35,7 @@ public class KakaoConnection {
         return new HttpEntity<>(headers);
     }
 
-    private HttpEntity<MultiValueMap<String,String>> generateAuthCodeRequest(String code) {
+    public HttpEntity<MultiValueMap<String,String>> generateAuthCodeRequest(String code) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
         return  new HttpEntity<>(generateParam(code), headers);
@@ -60,6 +60,5 @@ public class KakaoConnection {
                 OauthToken.class
         );
     }
-
-
+    
 }

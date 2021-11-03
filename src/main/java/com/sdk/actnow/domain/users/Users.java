@@ -16,14 +16,14 @@ public class Users extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 50)
-    private String snsId;
+    @Column
+    private int snsId;
 
     @Column(length = 200)
     private String email;
 
     @Builder
-    public Users (String snsId, String email) {
+    public Users (int snsId, String email) {
         this.snsId = snsId;
         this.email = email;
     }
