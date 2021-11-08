@@ -4,9 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sdk.actnow.domain.users.Users;
 import com.sdk.actnow.domain.users.UsersRepository;
-import com.sdk.actnow.dto.JwtDto;
+import com.sdk.actnow.dto.JwtResponseDto;
 import com.sdk.actnow.jwt.Jwt;
-import com.sdk.actnow.oauth.KakaoConnection;
 import com.sdk.actnow.oauth.KakaoProfile;
 import com.sdk.actnow.oauth.OauthToken;
 import lombok.RequiredArgsConstructor;
@@ -21,10 +20,10 @@ public class KakaoLoginService {
 
     private final ObjectMapper objectMapper;
     private final UsersRepository usersRepository;
-    private Jwt jwt = new Jwt();
+    private final Jwt jwt = new Jwt();
 
     @Transactional
-    public JwtDto save(String code){
+    public JwtResponseDto save(String code){
         OauthToken accessToken = requestAuthCode(generateAuthCodeRequest(code)).getBody();
         String response = requestProfile(generateProfileRequest(accessToken)).getBody();
         KakaoProfile profile = null;
@@ -42,10 +41,10 @@ public class KakaoLoginService {
             usersRepository.save(user);
         }
         String token = jwt.makeJwtToken(id);
-        JwtDto jwtDto = new JwtDto();
-        jwtDto.setMessage("success");
-        jwtDto.setToken(token);
-        return jwtDto;
+        JwtResponseDto jwtResponseDto = new JwtResponseDto();
+        jwtResponseDto.setMessage("success");
+        jwtResponseDto.setToken(token);
+        return jwtResponseDto;
     }
 
 }

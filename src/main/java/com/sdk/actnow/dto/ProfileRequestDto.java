@@ -5,8 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class JwtDto {
+public class ProfileRequestDto {
 
-    private String token;
-    private String message;
+    private String test;
 }
