@@ -25,7 +25,7 @@ public class UserRepositoryTest {
     public void 유저저장_불러오기() {
         //given
         String email = "sdk@naver.com";
-        String snsId = "12345673";
+        int snsId = 1234567;
 
         usersRepository.save(Users.builder()
                 .email(email)
@@ -47,7 +47,7 @@ public class UserRepositoryTest {
         LocalDateTime now = LocalDateTime.of(2021, 10, 31, 0,0,0);
         usersRepository.save(Users.builder()
                 .email("email")
-                .snsId("snsid")
+                .snsId(123456)
                 .build());
 
         //when

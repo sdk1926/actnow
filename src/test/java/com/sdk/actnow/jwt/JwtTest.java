@@ -21,7 +21,7 @@ public class JwtTest {
         boolean checkClaim = jwt.checkClaim(token);
         Claims claims = jwt.getJwtContents(token);
 
-        // result
+        // then
         assertThat(checkClaim).isEqualTo(true);
         assertThat(claims.get("id")).isEqualTo(1);
     }
