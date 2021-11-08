@@ -24,7 +24,7 @@ public class ProfileService {
         }
         Claims claims = jwt.getJwtContents(token);
         var id = claims.get("id");
-
+        System.out.println(profileRequestDto.getAboutMe());
         return new MessageDto("success");
     };
 
