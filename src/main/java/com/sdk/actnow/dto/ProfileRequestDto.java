@@ -1,10 +1,14 @@
 package com.sdk.actnow.dto;
 
+import com.sdk.actnow.domain.profile.Profile;
+import com.sdk.actnow.domain.profile.Specialty;
+import com.sdk.actnow.domain.users.Users;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -49,6 +53,32 @@ public class ProfileRequestDto {
         this.specialty = specialty;
         this.categoryDto = categoryDto;
         this.careerDto = careerDto;
+    }
+
+    public Profile toEntity(Users user) {
+        Profile entity = Profile.builder()
+                .user(user)
+                .age(this.age)
+                .height(this.height)
+                .weight(this.weight)
+                .email(this.email)
+                .phoneNumber(this.phoneNumber)
+                .snsAddress(this.snsAddress)
+                .aboutMe(this.aboutMe)
+                .build();
+        return entity;
+    }
+
+    public List<Specialty> toEntity(Profile profile) {
+        List<Specialty> entity = new ArrayList<>();
+        for(String s:this.specialty){
+            Specialty specialty = Specialty.builder()
+                    .profile(profile)
+                    .name(s)
+                    .build();
+            entity.add(specialty);
+        }
+        return entity;
     }
 
     @Getter

@@ -15,7 +15,8 @@ public class JwtTest {
     @Test
     public void jwt_생성() {
         // given
-        String token = jwt.makeJwtToken(1);
+        String token = jwt.makeJwtToken(8);
+        System.out.println(token);
 
         // when
         boolean checkClaim = jwt.checkClaim(token);
@@ -23,6 +24,6 @@ public class JwtTest {
 
         // then
         assertThat(checkClaim).isEqualTo(true);
-        assertThat(claims.get("id")).isEqualTo(1);
+        assertThat(claims.get("id")).isEqualTo(8);
     }
 }
