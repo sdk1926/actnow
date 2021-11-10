@@ -16,6 +16,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
 
 @RequiredArgsConstructor
 @Service
@@ -69,5 +75,30 @@ public class ProfileService {
             message.setMessage("FAIL");
             return new ResponseEntity<>(message,HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    private static String getUuid2() {
+        return UUID.randomUUID().toString().replaceAll("-","");
+    }
+
+    @Transactional
+    public ResponseEntity<Message> profilesSave(List<MultipartFile> multipartFile) throws IOException {
+        Message message = new Message();
+        message.setMessage("SUCCESS");
+        List<File> files = new ArrayList<>();
+        List<String> names = new ArrayList<>();
+        for(MultipartFile file:multipartFile){
+            String origName = file.getOriginalFilename();
+            final String ext = origName.substring(origName.lastIndexOf('.'));
+            final String saveFileName = getUuid2()+ext;
+            names.add(saveFileName);
+            File filel = new File(System.getProperty("user.dir")+saveFileName);
+            file.transferTo(filel);
+            files.add(filel);
+            filel.delete();
+        }
+        s3FileUploadService.uploadOnS3List(files,names.get(0));
+        System.out.println("did it?");
+        return new ResponseEntity<Message>(message,HttpStatus.OK);
     }
 }
