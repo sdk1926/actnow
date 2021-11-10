@@ -11,11 +11,11 @@ import org.springframework.web.client.RestTemplate;
 
 public class KakaoConnection {
 
-    private static final String CLIENT_ID = KakakoConfig.CLIENT_ID;
+    private static final String CLIENT_ID = KakaoConfig.CLIENT_ID;
 
-    private static final String CLIENT_SECRET = KakakoConfig.CLIENT_SECRET;
+    private static final String CLIENT_SECRET = KakaoConfig.CLIENT_SECRET;
 
-    private static final String REDIRECT_URL = KakakoConfig.REDIRECT_URL;
+    private static final String REDIRECT_URL = KakaoConfig.REDIRECT_URL;
 
     public static MultiValueMap<String, String> generateParam(String code) {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
