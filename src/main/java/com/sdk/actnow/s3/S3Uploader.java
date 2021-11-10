@@ -2,6 +2,7 @@ package com.sdk.actnow.s3;
 
 import com.amazonaws.services.s3.AmazonS3Client;
 import lombok.RequiredArgsConstructor;
+import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -11,4 +12,7 @@ import org.springframework.stereotype.Component;
 public class S3Uploader {
 
     private final AmazonS3Client amazonS3Client;
+//
+//    @Value("${cloud.aws.s3.bucket}")
+
 }
