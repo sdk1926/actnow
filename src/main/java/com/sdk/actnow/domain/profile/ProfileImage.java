@@ -9,16 +9,21 @@ import javax.persistence.*;
 @Getter
 @NoArgsConstructor
 @Entity
-public class Category {
+public class ProfileImage {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
-    private String name;
+    @Column(length = 512)
+    private String profileName;
+
+    @Column(length = 1024)
+    private String profileURL;
 
     @Builder
-    public Category(String name) {
-        this.name = name;
+    public ProfileImage(String profileName, String profileURL){
+        this.profileName = profileName;
+        this.profileURL = profileURL;
     }
 }

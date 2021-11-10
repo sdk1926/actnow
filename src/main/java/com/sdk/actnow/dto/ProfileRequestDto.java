@@ -1,5 +1,6 @@
 package com.sdk.actnow.dto;
 
+import com.sdk.actnow.domain.profile.Career;
 import com.sdk.actnow.domain.profile.Profile;
 import com.sdk.actnow.domain.profile.Specialty;
 import com.sdk.actnow.domain.users.Users;
@@ -25,8 +26,7 @@ public class ProfileRequestDto {
     private String snsAddress;
     private String aboutMe;
     private List<String> specialty;
-    private CategoryDto categoryDto;
-    private CareerDto careerDto;
+    private List<CareerDto> career;
 
     @Builder
     public ProfileRequestDto(
@@ -39,8 +39,7 @@ public class ProfileRequestDto {
             String snsAddress,
             String aboutMe,
             List<String> specialty,
-            CategoryDto categoryDto,
-            CareerDto careerDto
+            List<CareerDto> career
     ){
         this.year = year;
         this.age = age;
@@ -51,8 +50,7 @@ public class ProfileRequestDto {
         this.snsAddress = snsAddress;
         this.aboutMe = aboutMe;
         this.specialty = specialty;
-        this.categoryDto = categoryDto;
-        this.careerDto = careerDto;
+        this.career = career;
     }
 
     public Profile toEntity(Users user) {
@@ -82,28 +80,36 @@ public class ProfileRequestDto {
     }
 
     @Getter
-    public static class CategoryDto{
-        String name;
-
-        @Builder
-        public CategoryDto(String name){
-            this.name = name;
-        }
-    }
-
-    @Getter
+    @Setter
+    @NoArgsConstructor
     public static class CareerDto{
         int year;
         String name;
         String role;
-        CategoryDto categoryDto;
+        String category;
 
         @Builder
-        public CareerDto(int year, String name, String role, CategoryDto categoryDto){
+        public CareerDto(String category, int year, String name, String role){
             this.year = year;
             this.name = name;
             this.role = role;
-            this.categoryDto = categoryDto;
+            this.category= category;
         }
     }
+
+    public List<Career> toEntityCareer(Profile profile){
+        List<Career> entity = new ArrayList<>();
+        for(CareerDto c:this.career) {
+            Career career = Career.builder()
+                    .profile(profile)
+                    .year(c.year)
+                    .name(c.name)
+                    .role(c.role)
+                    .category(c.category)
+                    .build();
+            entity.add(career);
+        }
+        return entity;
+    }
 }
+

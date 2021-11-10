@@ -16,6 +16,10 @@ public class Career {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne(cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "profile_id")
+    private Profile profile;
+
     @Column
     private int year;
 
@@ -25,12 +29,12 @@ public class Career {
     @Column
     private String role;
 
-    @OneToOne
-    @JoinColumn(name = "category_id")
-    private Category category;
+    @Column
+    private String category;
 
     @Builder
-    public Career(int year, String name, String role, Category category){
+    public Career(Profile profile, int year, String name, String role, String category){
+        this.profile = profile;
         this.year = year;
         this.name = name;
         this.role = role;
