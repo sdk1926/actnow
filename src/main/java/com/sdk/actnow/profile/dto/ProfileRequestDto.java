@@ -1,13 +1,10 @@
-package com.sdk.actnow.dto;
+package com.sdk.actnow.profile.dto;
 
-import com.sdk.actnow.domain.profile.Career;
-import com.sdk.actnow.domain.profile.Profile;
-import com.sdk.actnow.domain.profile.Specialty;
+import com.sdk.actnow.profile.domain.Career;
+import com.sdk.actnow.profile.domain.Profile;
+import com.sdk.actnow.profile.domain.Specialty;
 import com.sdk.actnow.domain.users.Users;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -82,6 +79,7 @@ public class ProfileRequestDto {
     @Getter
     @Setter
     @NoArgsConstructor
+    @AllArgsConstructor
     public static class CareerDto{
         int year;
         String name;

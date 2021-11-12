@@ -1,4 +1,4 @@
-package com.sdk.actnow.domain.profile;
+package com.sdk.actnow.profile.domain;
 
 import com.sdk.actnow.domain.BaseTimeEntity;
 import com.sdk.actnow.domain.users.Users;
@@ -17,7 +17,7 @@ public class Profile extends BaseTimeEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
     private Users user;
 

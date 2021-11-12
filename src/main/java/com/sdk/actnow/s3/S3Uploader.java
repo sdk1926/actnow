@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Optional;
+import java.util.UUID;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -20,7 +21,6 @@ import java.util.Optional;
 public class S3Uploader {
 
     private final AmazonS3Client amazonS3Client;
-
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
@@ -32,8 +32,12 @@ public class S3Uploader {
         return upload(uploadFile, dirName);
     }
 
+    private String getUuid() {
+        return UUID.randomUUID().toString().replaceAll("-","");
+    }
+
     private String upload(File uploadFile, String dirName) {
-        String fileName = dirName + "/" + uploadFile.getName();
+        String fileName = dirName + "/" + getUuid() + uploadFile.getName();
         String uploadImageUrl = putS3(uploadFile, fileName);
         removeNewFile(uploadFile);
         return uploadImageUrl;

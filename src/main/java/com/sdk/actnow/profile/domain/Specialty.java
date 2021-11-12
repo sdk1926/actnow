@@ -1,4 +1,4 @@
-package com.sdk.actnow.domain.profile;
+package com.sdk.actnow.profile.domain;
 
 import com.sdk.actnow.domain.BaseTimeEntity;
 import lombok.Builder;
