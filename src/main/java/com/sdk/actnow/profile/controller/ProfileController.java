@@ -1,6 +1,7 @@
 package com.sdk.actnow.profile.controller;
 
 import com.sdk.actnow.profile.dto.ProfileRequestDto;
+import com.sdk.actnow.profile.dto.ProfileResponseDto;
 import com.sdk.actnow.profile.service.ProfileService;
 import com.sdk.actnow.util.Message;
 import lombok.RequiredArgsConstructor;
@@ -21,10 +22,10 @@ public class ProfileController {
 
     private final ProfileService profileService;
 
-//    @GetMapping("/api/v1/profile/{profileId}")
-//    public ResponseEntity<ProfileResposeDto> findById(@PathVariable(value = "profileId") long profileId){
-//        return profileService.findById(profileId);
-//    }
+    @GetMapping("/api/v1/profile/{profileId}")
+    public ResponseEntity<ProfileResponseDto> findById(@PathVariable(value = "profileId") long profileId){
+        return profileService.findById(profileId);
+    }
 
     @PostMapping("/api/v1/profile")
     public ResponseEntity<Message> save(@RequestBody ProfileRequestDto profileRequestDto, HttpServletRequest requset) {

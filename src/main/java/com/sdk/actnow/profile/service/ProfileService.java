@@ -98,13 +98,20 @@ public class ProfileService {
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
 
-//    @Transactional
-//    public ResponseEntity<ProfileResponseDto> findById(long id) {
-//        Profile profile = profileRepository.findById(id)
-//                .orElseThrow(() -> new IllegalArgumentException("해당 프로필이 없습니다. id="+id));
-//
-//
-//        return new ResponseEntity<>();
-//    }
+    @Transactional(readOnly = true)
+    public ResponseEntity<ProfileResponseDto> findById(long id) {
+        Profile profile = profileRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 프로필이 없습니다. id="+id));
+        List<Specialty> specialties = specialtyRepository.findAllByProfileId(id);
+        List<Career> careers = careerRepository.findAllByProfileId(id);
+        List<ProfileImage> profileImages = profileImageRepository.findAllByProfileId(id);
+        ProfileResponseDto profileResponseDto = ProfileResponseDto.builder()
+                .profile(profile)
+                .specialties(specialties)
+                .careers(careers)
+                .profileImageList(profileImages)
+                .build();
+        return new ResponseEntity<>(profileResponseDto,HttpStatus.OK);
+    }
 
 }

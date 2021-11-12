@@ -14,7 +14,6 @@ import java.util.List;
 @NoArgsConstructor
 public class ProfileRequestDto {
 
-    private int year;
     private int age;
     private int height;
     private int weight;
@@ -38,7 +37,6 @@ public class ProfileRequestDto {
             List<String> specialty,
             List<CareerDto> career
     ){
-        this.year = year;
         this.age = age;
         this.height = height;
         this.weight = weight;
