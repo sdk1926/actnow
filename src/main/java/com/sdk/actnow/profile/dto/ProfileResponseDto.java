@@ -14,6 +14,7 @@ import java.util.List;
 public class ProfileResponseDto {
 
     private int age;
+    private String name;
     private int height;
     private int weight;
     private String email;
@@ -27,9 +28,10 @@ public class ProfileResponseDto {
     @Builder
     public ProfileResponseDto(Profile profile,
                               List<Specialty> specialties,
-                              List<Career> careers,
-                              List<ProfileImage> profileImageList){
+                              List<Career> careers
+                              ){
         this.age = profile.getAge();
+        this.name = profile.getName();
         this.height = profile.getHeight();
         this.weight = profile.getWeight();
         this.email = profile.getEmail();
@@ -51,8 +53,8 @@ public class ProfileResponseDto {
                         .build());
             }
         }
-        if(!profileImageList.isEmpty()){
-            for(ProfileImage p:profileImageList){
+        if(!profile.getProfileImages().isEmpty()){
+            for(ProfileImage p:profile.getProfileImages()){
                 this.profileImage.add(p.getProfileURL());
             }
         }

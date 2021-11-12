@@ -15,6 +15,7 @@ import java.util.List;
 public class ProfileRequestDto {
 
     private int age;
+    private String name;
     private int height;
     private int weight;
     private String email;
@@ -26,7 +27,7 @@ public class ProfileRequestDto {
 
     @Builder
     public ProfileRequestDto(
-            int year,
+            String name,
             int age,
             int height,
             int weight,
@@ -37,6 +38,7 @@ public class ProfileRequestDto {
             List<String> specialty,
             List<CareerDto> career
     ){
+        this.name = name;
         this.age = age;
         this.height = height;
         this.weight = weight;
@@ -51,6 +53,7 @@ public class ProfileRequestDto {
     public Profile toEntity(Users user) {
         Profile entity = Profile.builder()
                 .user(user)
+                .name(name)
                 .age(this.age)
                 .height(this.height)
                 .weight(this.weight)

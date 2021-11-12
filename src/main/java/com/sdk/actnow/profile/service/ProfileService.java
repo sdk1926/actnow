@@ -104,12 +104,10 @@ public class ProfileService {
                 .orElseThrow(() -> new IllegalArgumentException("해당 프로필이 없습니다. id="+id));
         List<Specialty> specialties = specialtyRepository.findAllByProfileId(id);
         List<Career> careers = careerRepository.findAllByProfileId(id);
-        List<ProfileImage> profileImages = profileImageRepository.findAllByProfileId(id);
         ProfileResponseDto profileResponseDto = ProfileResponseDto.builder()
                 .profile(profile)
                 .specialties(specialties)
                 .careers(careers)
-                .profileImageList(profileImages)
                 .build();
         return new ResponseEntity<>(profileResponseDto,HttpStatus.OK);
     }

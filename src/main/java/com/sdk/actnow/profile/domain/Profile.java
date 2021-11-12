@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Getter
 @NoArgsConstructor
@@ -23,6 +24,9 @@ public class Profile extends BaseTimeEntity{
 
     @Column
     private int age;
+
+    @Column
+    private String name;
 
     @Column
     private int height;
@@ -42,18 +46,24 @@ public class Profile extends BaseTimeEntity{
     @Column(length = 2048)
     private String aboutMe;
 
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "profile")
+    private List<ProfileImage> profileImages;
+
     @Builder
     public Profile(
             Users user,
             int age,
+            String name,
             int height,
             int weight,
             String email,
             String phoneNumber,
             String snsAddress,
-            String aboutMe
+            String aboutMe,
+            List<ProfileImage> profileImages
     ){
         this.user = user;
+        this.name = name;
         this.age = age;
         this.height = height;
         this.weight = weight;
@@ -61,5 +71,6 @@ public class Profile extends BaseTimeEntity{
         this.phoneNumber = phoneNumber;
         this.snsAddress = snsAddress;
         this.aboutMe = aboutMe;
+        this.profileImages = profileImages;
     }
 }
