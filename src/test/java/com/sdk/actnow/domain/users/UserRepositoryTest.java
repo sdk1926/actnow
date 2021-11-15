@@ -1,5 +1,7 @@
 package com.sdk.actnow.domain.users;
 
+import com.sdk.actnow.oauth.domain.users.Users;
+import com.sdk.actnow.oauth.domain.users.UsersRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

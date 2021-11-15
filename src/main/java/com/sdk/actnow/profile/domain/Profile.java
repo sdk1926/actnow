@@ -1,7 +1,8 @@
 package com.sdk.actnow.profile.domain;
 
-import com.sdk.actnow.domain.BaseTimeEntity;
-import com.sdk.actnow.domain.users.Users;
+import com.sdk.actnow.oauth.domain.BaseTimeEntity;
+import com.sdk.actnow.oauth.domain.users.Users;
+import com.sdk.actnow.profile.dto.ProfileRequestDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,8 +19,8 @@ public class Profile extends BaseTimeEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_id")
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "user_id", nullable = false, unique = true)
     private Users user;
 
     @Column
@@ -79,4 +80,14 @@ public class Profile extends BaseTimeEntity{
         this.profileImages = profileImages;
     }
 
+    public void update(ProfileRequestDto profileRequestDto) {
+        this.age = profileRequestDto.getAge();
+        this.name = profileRequestDto.getName();
+        this.height = profileRequestDto.getHeight();
+        this.weight = profileRequestDto.getWeight();
+        this.email = profileRequestDto.getEmail();
+        this.phoneNumber = profileRequestDto.getPhoneNumber();
+        this.snsAddress = profileRequestDto.getSnsAddress();
+        this.aboutMe = profileRequestDto.getAboutMe();
+    }
 }

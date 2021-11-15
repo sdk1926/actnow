@@ -1,6 +1,6 @@
-package com.sdk.actnow.domain.users;
+package com.sdk.actnow.oauth.domain.users;
 
-import com.sdk.actnow.domain.BaseTimeEntity;
+import com.sdk.actnow.oauth.domain.BaseTimeEntity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,13 +17,13 @@ public class Users extends BaseTimeEntity {
     private Long id;
 
     @Column(unique = true)
-    private int snsId;
+    private long snsId;
 
     @Column(length = 200)
     private String email;
 
     @Builder
-    public Users (int snsId, String email) {
+    public Users (long snsId, String email) {
         this.snsId = snsId;
         this.email = email;
     }

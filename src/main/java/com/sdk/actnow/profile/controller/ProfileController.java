@@ -37,17 +37,15 @@ public class ProfileController {
 
     @PostMapping("/api/v1/profile")
     public ResponseEntity<Message> save(@RequestBody ProfileRequestDto profileRequestDto, HttpServletRequest requset) {
-        String token = requset.getHeader("Authorization");
-        return profileService.save(profileRequestDto,token,requset);
+        return profileService.save(profileRequestDto,requset);
     }
 
     @PostMapping("api/v1/profile/image/{profileId}")
     public ResponseEntity<Message> saveImage(@PathVariable(value = "profileId")long profileId,
                                           @RequestPart(value = "profile") MultipartFile multipartFile,
                                           HttpServletRequest request) throws IOException {
-        String token = request.getHeader("Authorization");
         System.out.println("이미지 도착");
-        return profileService.saveImage(profileId, multipartFile, token);
+        return profileService.saveImage(profileId, multipartFile, request);
     }
 
     @PostMapping("api/v1/profile/images/{profileId}")
@@ -59,7 +57,20 @@ public class ProfileController {
         return profileService.saveImages(profileId, multipartFiles, token);
     }
 
-//    @PutMapping("/api/v1/profile/{profileId}")
-//    public ResponseEntity<Message> update(@PathVariable(value = "profileId")Long profileId,
-//                                          )
+    @PutMapping("/api/v1/profile/{profileId}")
+    public ResponseEntity<Message> update(@PathVariable(value = "profileId")Long profileId,
+                                          @RequestBody ProfileRequestDto profileRequestDto,
+                                          HttpServletRequest request){
+        String token = request.getHeader("Authorization");
+        return profileService.update(profileId,profileRequestDto,token);
+    }
+
+//    @RequestMapping(value="api/v1/prfile/images/{profileImageId}", method=RequestMethod.DELETE)
+    @DeleteMapping("api/v1/profile/images/{profileImageId}")
+    public ResponseEntity<Message> delete(@PathVariable(value = "profileImageId")Long profileImageId,
+                                          HttpServletRequest request) throws IOException{
+        String token = request.getHeader("Authorization");
+        return profileService.deleteImages(profileImageId,token);
+    }
+
 }

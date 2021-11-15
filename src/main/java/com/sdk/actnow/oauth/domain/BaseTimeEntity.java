@@ -1,4 +1,4 @@
-package com.sdk.actnow.domain;
+package com.sdk.actnow.oauth.domain;
 
 import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;

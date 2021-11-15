@@ -1,5 +1,6 @@
 package com.sdk.actnow.jwt;
 
+import com.sdk.actnow.profile.domain.ProfileImagesRepository;
 import io.jsonwebtoken.Claims;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,11 +13,13 @@ public class JwtTest {
 
     Jwt jwt = new Jwt();
 
+
     @Test
     public void jwt_생성() {
         // given
         String token = jwt.makeJwtToken(8);
         System.out.println(token);
+
 
         // when
         boolean checkClaim = jwt.checkClaim(token);

@@ -10,12 +10,15 @@ import lombok.Setter;
 @NoArgsConstructor
 public class ProfileImageDto {
 
+    private Long id;
     private String profileURL;
 
     @Builder
     public ProfileImageDto(
+            Long id,
             String profileURL
     ){
+        this.id = id;
         this.profileURL = profileURL;
     }
 }

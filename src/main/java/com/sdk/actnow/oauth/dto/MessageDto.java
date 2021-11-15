@@ -1,4 +1,4 @@
-package com.sdk.actnow.dto;
+package com.sdk.actnow.oauth.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

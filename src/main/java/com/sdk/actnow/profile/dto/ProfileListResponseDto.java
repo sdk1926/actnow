@@ -15,6 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 public class ProfileListResponseDto {
 
+    private Long id;
     private int age;
     private String name;
     private int height;
@@ -25,6 +26,7 @@ public class ProfileListResponseDto {
     @Builder
     public ProfileListResponseDto(Profile profile
     ) {
+        this.id = profile.getId();
         this.age = profile.getAge();
         this.name = profile.getName();
         this.height = profile.getHeight();

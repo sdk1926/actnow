@@ -3,7 +3,7 @@ package com.sdk.actnow.profile.dto;
 import com.sdk.actnow.profile.domain.Career;
 import com.sdk.actnow.profile.domain.Profile;
 import com.sdk.actnow.profile.domain.Specialty;
-import com.sdk.actnow.domain.users.Users;
+import com.sdk.actnow.oauth.domain.users.Users;
 import lombok.*;
 
 import java.util.ArrayList;

@@ -10,6 +10,7 @@ import java.util.List;
 @NoArgsConstructor
 public class ProfileResponseDto {
 
+    private Long id;
     private int age;
     private String name;
     private int height;
@@ -18,8 +19,8 @@ public class ProfileResponseDto {
     private String phoneNumber;
     private String snsAddress;
     private String aboutMe;
-    private String profileImage;
-    private List<String> profileImages = new ArrayList<>();
+    private ProfileImageDto profileImage;
+    private List<ProfileImageDto> profileImages = new ArrayList<>();
     private List<String> specialty = new ArrayList<>();
     private List<CareerDto> career = new ArrayList<>();
 
@@ -28,6 +29,7 @@ public class ProfileResponseDto {
                               List<Specialty> specialties,
                               List<Career> careers
                               ){
+        this.id = profile.getId();
         this.age = profile.getAge();
         this.name = profile.getName();
         this.height = profile.getHeight();
@@ -52,11 +54,17 @@ public class ProfileResponseDto {
             }
         }
         if(!(profile.getProfileImage() == null)){
-                this.profileImage = profile.getProfileImage().getProfileURL();
+                this.profileImage = ProfileImageDto.builder()
+                        .id(profile.getProfileImage().getId())
+                        .profileURL(profile.getProfileImage().getProfileURL())
+                        .build();
             }
         if(!profile.getProfileImages().isEmpty()){
             for (ProfileImages p: profile.getProfileImages()){
-                profileImages.add(p.getProfileURL());
+                profileImages.add(ProfileImageDto.builder()
+                .id(p.getId())
+                .profileURL(p.getProfileURL())
+                .build());
             }
         }
         }

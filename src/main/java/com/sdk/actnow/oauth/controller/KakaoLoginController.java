@@ -1,7 +1,7 @@
-package com.sdk.actnow.controller;
+package com.sdk.actnow.oauth.controller;
 
-import com.sdk.actnow.dto.JwtResponseDto;
-import com.sdk.actnow.service.KakaoLoginService;
+import com.sdk.actnow.oauth.dto.JwtResponseDto;
+import com.sdk.actnow.oauth.service.KakaoLoginService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;

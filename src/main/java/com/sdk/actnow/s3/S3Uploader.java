@@ -63,6 +63,22 @@ public class S3Uploader {
         return url;
     }
 
+//    private String deleteS3(String fileName) {
+//        final TransferManager transferManager = new TransferManager(this.amazonS3Client);
+//        // 업로드 시도
+//        final Upload upload =  transferManager.upload(new PutObjectRequest(bucket, fileName, uploadFile));
+//
+//        try {
+//            upload.waitForCompletion();
+//        } catch (AmazonClientException amazonClientException) {
+//            log.error(amazonClientException.getMessage());
+//        } catch (InterruptedException e) {
+//            log.error(e.getMessage());
+//        }
+//        String url = "https://actnow-bucket.s3.ap-northeast-2.amazonaws.com/"+fileName;
+//        return url;
+//    }
+
     private void removeNewFile(File targetFile) {
         if (targetFile.delete()) {
             log.info("파일이 삭제되었습니다.");

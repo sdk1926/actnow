@@ -1,6 +1,6 @@
 package com.sdk.actnow.profile.domain;
 
-import com.sdk.actnow.domain.BaseTimeEntity;
+import com.sdk.actnow.oauth.domain.BaseTimeEntity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
