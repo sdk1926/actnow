@@ -18,7 +18,7 @@ public class Profile extends BaseTimeEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
     private Users user;
 
@@ -46,8 +46,11 @@ public class Profile extends BaseTimeEntity{
     @Column(length = 2048)
     private String aboutMe;
 
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "profile")
+    private ProfileImage profileImage;
+
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "profile")
-    private List<ProfileImage> profileImages;
+    private List<ProfileImages> profileImages;
 
     @Builder
     public Profile(
@@ -60,7 +63,8 @@ public class Profile extends BaseTimeEntity{
             String phoneNumber,
             String snsAddress,
             String aboutMe,
-            List<ProfileImage> profileImages
+            ProfileImage profileImage,
+            List<ProfileImages> profileImages
     ){
         this.user = user;
         this.name = name;
@@ -71,6 +75,8 @@ public class Profile extends BaseTimeEntity{
         this.phoneNumber = phoneNumber;
         this.snsAddress = snsAddress;
         this.aboutMe = aboutMe;
+        this.profileImage = profileImage;
         this.profileImages = profileImages;
     }
+
 }

@@ -33,7 +33,7 @@ public class KakaoLoginService {
             e.printStackTrace();
         }
         int id = profile.getId();
-        if (usersRepository.findBySnsId(id).isEmpty()) {
+        if (usersRepository.findBySnsId(id) == null) {
             Users user = Users.builder()
                     .snsId(id)
                     .email(profile.getKakao_account().getEmail())

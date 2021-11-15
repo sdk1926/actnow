@@ -44,7 +44,6 @@ public class ProfileControllerTest {
         String url = "http://localhost:"+"8080"+"/api/v1/profile";
         String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJmcmVzaCIsImlhdCI6MTYzNjY4NTUyNiwiZXhwIjoxNjM3MjkwMzI2LCJpZCI6OH0.arRhXxTrfxLx0wkP1gNYacvCIMZLWfkua0_zIm_2RjQ";
         ProfileRequestDto profileRequestDto = ProfileRequestDto.builder()
-                .year(2017)
                 .age(15)
                 .height(171)
                 .weight(65)

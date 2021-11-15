@@ -2,6 +2,7 @@ package com.sdk.actnow.profile.service;
 
 import com.sdk.actnow.domain.users.Users;
 import com.sdk.actnow.domain.users.UsersRepository;
+import com.sdk.actnow.profile.dto.ProfileListResponseDto;
 import com.sdk.actnow.profile.dto.ProfileRequestDto;
 import com.sdk.actnow.jwt.Jwt;
 import com.sdk.actnow.profile.domain.*;
@@ -9,6 +10,8 @@ import com.sdk.actnow.profile.dto.ProfileResponseDto;
 import com.sdk.actnow.s3.S3Uploader;
 import com.sdk.actnow.util.Message;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -20,6 +23,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+
 @RequiredArgsConstructor
 @Service
 public class ProfileService {
@@ -29,6 +33,7 @@ public class ProfileService {
     private final SpecialtyRepository specialtyRepository;
     private final CareerRepository careerRepository;
     private final ProfileImageRepository profileImageRepository;
+    private final ProfileImagesRepository profileImagesRepository;
     private final S3Uploader s3Uploader;
     private final Jwt jwt = new Jwt();
 
@@ -41,13 +46,14 @@ public class ProfileService {
             return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
         }
 
-        Long id = jwt.getJwtContents(token).get("id",Long.class);
-        Users user = usersRepository.getById(id);
+        int id = jwt.getJwtContents(token).get("id",Integer.class);
+        Users user= usersRepository.findBySnsId(id);
         Profile profile = profileRepository.save(profileRequestDto.toEntity(user));
         specialtyRepository.saveAll(profileRequestDto.toEntity(profile));
         careerRepository.saveAll(profileRequestDto.toEntityCareer(profile));
 
         message.setMessage("SUCCESS");
+        message.setId(profile.getId());
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
 
@@ -60,14 +66,18 @@ public class ProfileService {
             return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
         }
 
-        String url = s3Uploader.upload(multipartFile, "profile");
         Profile profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 프로필이 없습니다. id="+profileId));
-        ProfileImage profileImage = new ProfileImage(profile,url);
-        profileImageRepository.save(profileImage);
+        if (profile.getProfileImage() == null){
+            String url = s3Uploader.upload(multipartFile, "profile");
+            ProfileImage profileImage = new ProfileImage(profile,url);
+            profileImageRepository.save(profileImage);
+            message.setMessage("SUCCESS");
+            return new ResponseEntity<>(message, HttpStatus.OK);
+        }
 
-        message.setMessage("SUCCESS");
-        return new ResponseEntity<>(message, HttpStatus.OK);
+        message.setMessage("Image aleady exists");
+        return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
 
     }
 
@@ -83,17 +93,17 @@ public class ProfileService {
         for(MultipartFile file: multipartFiles) {
             urls.add(s3Uploader.upload(file,"profile"));
         }
-
+        System.out.println("Success");
         Profile profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 프로필이 없습니다. id="+profileId));
-
-        List<ProfileImage> profileimages = new ArrayList<>();
+        System.out.println("여기서 쿼리가 생기니?");
+        List<ProfileImages> profileimages = new ArrayList<>();
         for(String url:urls){
-            ProfileImage profileImage = new ProfileImage(profile,url);
-            profileimages.add(profileImage);
+            ProfileImages profileImages = new ProfileImages(profile,url);
+            profileimages.add(profileImages);
         }
 
-        profileImageRepository.saveAll(profileimages);
+        profileImagesRepository.saveAll(profileimages);
         message.setMessage("SUCCESS");
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
@@ -110,6 +120,16 @@ public class ProfileService {
                 .careers(careers)
                 .build();
         return new ResponseEntity<>(profileResponseDto,HttpStatus.OK);
+    }
+
+    @Transactional(readOnly = true)
+    public ResponseEntity findAll(Pageable pageable) {
+        Page<Profile> profiles = profileRepository.findAll(pageable);
+        Page<ProfileListResponseDto> profileListResponseDtos = profiles.map(
+                profile -> ProfileListResponseDto.builder()
+                        .profile(profile)
+                        .build());
+        return new ResponseEntity(profileListResponseDtos,HttpStatus.OK);
     }
 
 }

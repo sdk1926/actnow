@@ -1,8 +1,5 @@
 package com.sdk.actnow.profile.dto;
-import com.sdk.actnow.profile.domain.Career;
-import com.sdk.actnow.profile.domain.Profile;
-import com.sdk.actnow.profile.domain.ProfileImage;
-import com.sdk.actnow.profile.domain.Specialty;
+import com.sdk.actnow.profile.domain.*;
 import lombok.*;
 
 import java.util.ArrayList;
@@ -21,9 +18,10 @@ public class ProfileResponseDto {
     private String phoneNumber;
     private String snsAddress;
     private String aboutMe;
+    private String profileImage;
+    private List<String> profileImages = new ArrayList<>();
     private List<String> specialty = new ArrayList<>();
     private List<CareerDto> career = new ArrayList<>();
-    private List<String> profileImage = new ArrayList<>();
 
     @Builder
     public ProfileResponseDto(Profile profile,
@@ -53,14 +51,18 @@ public class ProfileResponseDto {
                         .build());
             }
         }
+        if(!(profile.getProfileImage() == null)){
+                this.profileImage = profile.getProfileImage().getProfileURL();
+            }
         if(!profile.getProfileImages().isEmpty()){
-            for(ProfileImage p:profile.getProfileImages()){
-                this.profileImage.add(p.getProfileURL());
+            for (ProfileImages p: profile.getProfileImages()){
+                profileImages.add(p.getProfileURL());
             }
         }
+        }
+
     }
 
-}
 
 
 

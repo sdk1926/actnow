@@ -6,8 +6,10 @@ import lombok.Data;
 public class Message {
 
     private String message;
-
+    private Long id;
     public Message() {
+
         this.message = null;
+        this.id = null;
     }
 }

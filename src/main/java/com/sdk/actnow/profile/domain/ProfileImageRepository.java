@@ -7,4 +7,5 @@ import java.util.Optional;
 
 public interface ProfileImageRepository extends JpaRepository<ProfileImage,Long> {
     List<ProfileImage> findAllByProfileId(long id);
+    ProfileImage findByProfileId(Long id);
 }

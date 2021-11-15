@@ -9,21 +9,21 @@ import javax.persistence.*;
 @Getter
 @NoArgsConstructor
 @Entity
-public class ProfileImage {
+public class ProfileImages {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "profile_id", unique = true, nullable = false)
+    @ManyToOne(cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "profile_id", nullable = false)
     private Profile profile;
 
     @Column(length = 1024)
     private String profileURL;
 
     @Builder
-    public ProfileImage(Profile profile, String profileURL){
+    public ProfileImages(Profile profile, String profileURL){
         this.profile = profile;
         this.profileURL = profileURL;
     }

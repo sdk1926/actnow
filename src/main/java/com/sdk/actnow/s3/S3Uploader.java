@@ -1,8 +1,10 @@
 package com.sdk.actnow.s3;
 
+import com.amazonaws.AmazonClientException;
 import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.transfer.TransferManager;
+import com.amazonaws.services.s3.transfer.Upload;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,7 +30,7 @@ public class S3Uploader {
     public String upload(MultipartFile multipartFile, String dirName) throws IOException {
         File uploadFile = convert(multipartFile)
                 .orElseThrow(() -> new IllegalArgumentException("MultipartFile -> File로 전환이 실패했습니다."));
-
+        System.out.println("컨버트 성공");
         return upload(uploadFile, dirName);
     }
 
@@ -38,14 +40,27 @@ public class S3Uploader {
 
     private String upload(File uploadFile, String dirName) {
         String fileName = dirName + "/" + getUuid() + uploadFile.getName();
+        System.out.println("uuid성공");
         String uploadImageUrl = putS3(uploadFile, fileName);
+        System.out.println("업로드 성공");
         removeNewFile(uploadFile);
         return uploadImageUrl;
     }
 
     private String putS3(File uploadFile, String fileName) {
-        amazonS3Client.putObject(new PutObjectRequest(bucket, fileName, uploadFile).withCannedAcl(CannedAccessControlList.PublicRead));
-        return amazonS3Client.getUrl(bucket, fileName).toString();
+        final TransferManager transferManager = new TransferManager(this.amazonS3Client);
+        // 업로드 시도
+        final Upload upload =  transferManager.upload(new PutObjectRequest(bucket, fileName, uploadFile));
+
+        try {
+            upload.waitForCompletion();
+        } catch (AmazonClientException amazonClientException) {
+            log.error(amazonClientException.getMessage());
+        } catch (InterruptedException e) {
+            log.error(e.getMessage());
+        }
+        String url = "https://actnow-bucket.s3.ap-northeast-2.amazonaws.com/"+fileName;
+        return url;
     }
 
     private void removeNewFile(File targetFile) {
@@ -57,7 +72,7 @@ public class S3Uploader {
     }
 
     private Optional<File> convert(MultipartFile file) throws IOException {
-        File convertFile = new File(file.getOriginalFilename());
+        File convertFile = new File(file.getOriginalFilename()+".jpg");
         if(convertFile.createNewFile()) {
             try (FileOutputStream fos = new FileOutputStream(convertFile)) {
                 fos.write(file.getBytes());
