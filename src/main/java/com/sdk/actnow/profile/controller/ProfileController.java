@@ -52,25 +52,29 @@ public class ProfileController {
     public ResponseEntity<Message> saveImages(@PathVariable(value = "profileId")long profileId,
                                               @RequestPart(value = "profiles")List<MultipartFile> multipartFiles,
                                               HttpServletRequest request) throws IOException {
-        String token = request.getHeader("Authorization");
         System.out.println("이미지 도착");
-        return profileService.saveImages(profileId, multipartFiles, token);
+        return profileService.saveImages(profileId, multipartFiles,request);
     }
 
     @PutMapping("/api/v1/profile/{profileId}")
     public ResponseEntity<Message> update(@PathVariable(value = "profileId")Long profileId,
                                           @RequestBody ProfileRequestDto profileRequestDto,
                                           HttpServletRequest request){
-        String token = request.getHeader("Authorization");
-        return profileService.update(profileId,profileRequestDto,token);
+        return profileService.update(profileId,profileRequestDto,request);
     }
 
-//    @RequestMapping(value="api/v1/prfile/images/{profileImageId}", method=RequestMethod.DELETE)
+    @PutMapping("/api/v1/profile/image/{profileId}")
+    public ResponseEntity<Message> updateImage(@PathVariable(value = "profileId")Long profileId,
+                                               @RequestPart(value = "profile") MultipartFile multipartFile,
+                                               HttpServletRequest request) throws IOException {
+        return profileService.updateImage(profileId, multipartFile, request);
+    }
+
+
     @DeleteMapping("api/v1/profile/images/{profileImageId}")
     public ResponseEntity<Message> delete(@PathVariable(value = "profileImageId")Long profileImageId,
                                           HttpServletRequest request) throws IOException{
-        String token = request.getHeader("Authorization");
-        return profileService.deleteImages(profileImageId,token);
+        return profileService.deleteImages(profileImageId,request);
     }
 
 }

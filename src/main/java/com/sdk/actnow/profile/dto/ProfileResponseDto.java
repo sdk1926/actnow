@@ -21,7 +21,7 @@ public class ProfileResponseDto {
     private String aboutMe;
     private ProfileImageDto profileImage;
     private List<ProfileImageDto> profileImages = new ArrayList<>();
-    private List<String> specialty = new ArrayList<>();
+    private List<SpecialtyDto> specialty = new ArrayList<>();
     private List<CareerDto> career = new ArrayList<>();
 
     @Builder
@@ -40,12 +40,17 @@ public class ProfileResponseDto {
         this.aboutMe = profile.getAboutMe();
         if (!specialties.isEmpty()){
             for(Specialty s:specialties){
-                this.specialty.add(s.getName());
+                this.specialty.add(SpecialtyDto.builder()
+                        .id(s.getId())
+                        .speciaty(s.getName())
+                        .build()
+                );
             }
         }
         if (!careers.isEmpty()){
             for(Career c:careers) {
                 this.career.add(CareerDto.builder()
+                        .id(c.getId())
                         .name(c.getName())
                         .role(c.getCategory())
                         .category(c.getCategory())

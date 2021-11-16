@@ -9,11 +9,12 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class SpecialtyDto {
-
+    private Long id;
     private String speciaty;
 
     @Builder
-    public SpecialtyDto(String speciaty){
+    public SpecialtyDto(long id, String speciaty) {
+        this.id = id;
         this.speciaty = speciaty;
     }
 }

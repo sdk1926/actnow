@@ -9,13 +9,15 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class CareerDto {
+    Long id;
     int year;
     String name;
     String role;
     String category;
 
     @Builder
-    public CareerDto(String category, int year, String name, String role){
+    public CareerDto(Long id, String category, int year, String name, String role){
+        this.id = id;
         this.year = year;
         this.name = name;
         this.role = role;

@@ -11,7 +11,6 @@ import com.sdk.actnow.s3.S3Uploader;
 import com.sdk.actnow.util.Message;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -22,7 +21,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,8 +43,8 @@ public class ProfileService {
         try {
             if (!checkToken(request)){ return new ResponseEntity<>(new Message("WRONG_TOKEN"), HttpStatus.BAD_REQUEST); }
             Users user = getUser(getSnsId(request));
-            if (profileRepository.findByUser(user) != null){
-                return new ResponseEntity<>(new Message("Profile_already_exist"), HttpStatus.BAD_REQUEST);
+            if (checkProfileUser(user)){
+                return new ResponseEntity<>(new Message("PROFILE_ALREADY_EXISTS"), HttpStatus.BAD_REQUEST);
             }
             return new ResponseEntity<>(new Message("SUCCESS",saveProfile(profileRequestDto,user)), HttpStatus.OK);
         } catch (IllegalArgumentException e){
@@ -56,63 +54,63 @@ public class ProfileService {
     }
 
     @Transactional
-    public ResponseEntity<Message> saveImage(long profileId, MultipartFile multipartFile, HttpServletRequest request) throws IOException{
+    public ResponseEntity<Message> saveImage(long profileId, MultipartFile multipartFile,
+                                             HttpServletRequest request) throws IOException{
         try {
-            if (!checkToken(request)) { return new ResponseEntity<>(new Message("WRONG_TOKEN"), HttpStatus.BAD_REQUEST); }
+            if (!checkToken(request)) {
+                return new ResponseEntity<>(new Message("WRONG_TOKEN"), HttpStatus.BAD_REQUEST);
+            }
             Profile profile = findProfile(profileId);
             Users user = getUser(getSnsId(request));
-            if (profile.getUser().getId() != user.getId()) {return new ResponseEntity<>(new Message("WRONG_ACCESS"), HttpStatus.BAD_REQUEST);}
+            if (!profile.getUser().getId().equals(user.getId())) {
+                return new ResponseEntity<>(new Message("WRONG_ACCESS"), HttpStatus.BAD_REQUEST);
+            }
             if (profile.getProfileImage() == null) {
                 String url = s3Uploader.upload(multipartFile, "profile");
                 ProfileImage profileImage = profileImageRepository.save(new ProfileImage(profile, url));
                 return new ResponseEntity<>(new Message("SUCCESS", profileImage.getId()), HttpStatus.OK);
             }
-            return new ResponseEntity<>(new Message("Image_already_exists"), HttpStatus.BAD_REQUEST);
-        }catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(new Message("IMAGE_ALREADY_EXISTS"), HttpStatus.BAD_REQUEST);
+        } catch (IllegalArgumentException e) {
             log.error(e.getMessage());
-            return new ResponseEntity<>(new Message("Profile_Does_Not_Exists"),HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Message("PROFILE_DOES_NOT_EXISTS"),HttpStatus.BAD_REQUEST);
         }
     }
 
     @Transactional
-    public ResponseEntity<Message> saveImages(Long profileId, List<MultipartFile> multipartFiles, String token) throws IOException {
-        Message message = new Message();
-
-        if (!jwt.checkClaim(token)){
-            message.setMessage("WRONG_TOKEN");
-            return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
+    public ResponseEntity<Message> saveImages(Long profileId, List<MultipartFile> multipartFiles, HttpServletRequest request) {
+        try {
+            if (!checkToken(request)) { return new ResponseEntity<>(new Message("WRONG_TOKEN"), HttpStatus.BAD_REQUEST); }
+            List<String> urls = getUrls(multipartFiles);
+            Profile profile = findProfile(profileId);
+            List<ProfileImages> profileimages = getProfileImagesList(profile, urls);
+            profileImagesRepository.saveAll(profileimages);
+        } catch (IllegalArgumentException e) {
+            log.error(e.getMessage());
+            return new ResponseEntity<>(new Message("PROFILE_DOES_NOT_EXISTS"),HttpStatus.BAD_REQUEST);
+        } catch (IOException e){
+            log.error(e.getMessage());
+            return new ResponseEntity<>(new Message("IO_ERROR"),HttpStatus.BAD_REQUEST);
         }
-        List<String> urls = new ArrayList<>();
-        for(MultipartFile file: multipartFiles) {
-            urls.add(s3Uploader.upload(file,"profile"));
-        }
-        System.out.println("Success");
-        Profile profile = profileRepository.findById(profileId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 프로필이 없습니다. id="+profileId));
-        System.out.println("여기서 쿼리가 생기니?");
-        List<ProfileImages> profileimages = new ArrayList<>();
-        for(String url:urls){
-            ProfileImages profileImages = new ProfileImages(profile,url);
-            profileimages.add(profileImages);
-        }
-
-        profileImagesRepository.saveAll(profileimages);
-        message.setMessage("SUCCESS");
-        return new ResponseEntity<>(message, HttpStatus.OK);
+        return new ResponseEntity<>(new Message("SUCCESS"), HttpStatus.OK);
     }
 
     @Transactional(readOnly = true)
     public ResponseEntity<ProfileResponseDto> findById(long id) {
-        Profile profile = profileRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 프로필이 없습니다. id="+id));
-        List<Specialty> specialties = specialtyRepository.findAllByProfileId(id);
-        List<Career> careers = careerRepository.findAllByProfileId(id);
-        ProfileResponseDto profileResponseDto = ProfileResponseDto.builder()
-                .profile(profile)
-                .specialties(specialties)
-                .careers(careers)
-                .build();
-        return new ResponseEntity<>(profileResponseDto,HttpStatus.OK);
+        try {
+            Profile profile = findProfile(id);
+            List<Specialty> specialties = specialtyRepository.findAllByProfileId(id);
+            List<Career> careers = careerRepository.findAllByProfileId(id);
+            ProfileResponseDto profileResponseDto = ProfileResponseDto.builder()
+                    .profile(profile)
+                    .specialties(specialties)
+                    .careers(careers)
+                    .build();
+            return new ResponseEntity<>(profileResponseDto, HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            log.error(e.getMessage());
+            return new ResponseEntity<>(new ProfileResponseDto(),HttpStatus.BAD_REQUEST);
+        }
     }
 
     @Transactional(readOnly = true)
@@ -126,52 +124,69 @@ public class ProfileService {
     }
 
     @Transactional
-    public ResponseEntity<Message> update(Long profileId, ProfileRequestDto profileRequestDto,String token){
-        Message message = new Message();
-
-        if (!jwt.checkClaim(token)){
-            message.setMessage("WRONG_TOKEN");
-            return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
+    public ResponseEntity<Message> update(Long profileId, ProfileRequestDto profileRequestDto,HttpServletRequest request){
+        try {
+            if (!checkToken(request)) { return new ResponseEntity<>(new Message("WRONG_TOKEN"), HttpStatus.BAD_REQUEST); }
+            long snsId = getSnsId(request);
+            Profile profile = findProfile(profileId);
+            if(profile.getUser().getSnsId() != snsId){ return new ResponseEntity<>(new Message("WRONG_ACCESS"), HttpStatus.BAD_REQUEST); }
+            profile.update(profileRequestDto);
+            return new ResponseEntity<>(new Message("SUCCESS"), HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            log.error(e.getMessage());
+            return new ResponseEntity<>(new Message("PROFILE_DOES_NOT_EXISTS"),HttpStatus.BAD_REQUEST);
         }
-        int id = jwt.getJwtContents(token).get("id",Integer.class);
-
-        Profile profile = profileRepository.findById(profileId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 프로필이 없습니다. id="+profileId));
-
-        if(profile.getUser().getSnsId() != id){
-            message.setMessage("WRONG_ACCESS");
-            return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
-        }
-
-        profile.update(profileRequestDto);
-        message.setMessage("SUCCESS");
-        return new ResponseEntity<>(message, HttpStatus.OK);
     }
+
     @Transactional
-    public ResponseEntity<Message> deleteImages(long profileImageId,String token) throws IOException{
-        Message message = new Message();
-
-        if (!jwt.checkClaim(token)){
-            message.setMessage("WRONG_TOKEN");
-            return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
+    public ResponseEntity<Message> updateImage(Long profileImageId, MultipartFile multipartFile, HttpServletRequest request) throws IOException{
+        try {
+            if (!checkToken(request)) {
+                return new ResponseEntity<>(new Message("WRONG_TOKEN"), HttpStatus.BAD_REQUEST);
+            }
+            ProfileImage profileImage = profileImageRepository.findById(profileImageId).orElseThrow(()-> new IllegalArgumentException("이미지 없음"));
+            Users user = getUser(getSnsId(request));
+            if (!profileImage.getProfile().getUser().equals(user)) {
+                return new ResponseEntity<>(new Message("WRONG_ACCESS"), HttpStatus.BAD_REQUEST);
+            }
+            s3Uploader.deleteS3(profileImage.getProfileURL());
+            String url = s3Uploader.upload(multipartFile, "profile");
+            profileImage.update(url);
+            return new ResponseEntity<>(new Message("SUCCESS",profileImage.getId()), HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            log.error(e.getMessage());
+            return new ResponseEntity<>(new Message("PROFILE_DOES_NOT_EXISTS"),HttpStatus.BAD_REQUEST);
         }
-        Long id = jwt.getJwtContents(token).get("id",Long.class);
-        Users user = getUser(id);
-        Long profileId = profileRepository.findByUserId(user.getId()).getId();
+    }
 
-        if (profileImagesRepository.getById(profileImageId).getProfile().getId() != profileId){
-            message.setMessage("삭제 권한이 없습니다.");
-            return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
+    @Transactional
+    public ResponseEntity<Message> deleteImages(long profileImageId,HttpServletRequest request) {
+        try {
+            if (!checkToken(request)) { return new ResponseEntity<>(new Message("WRONG_TOKEN"), HttpStatus.BAD_REQUEST); }
+            long snsId = getSnsId(request);
+            Users user = getUser(snsId);
+            ProfileImages profileImages = getProfileImages(profileImageId);
+            if (profileImages.getProfile().getUser() != user) {
+                return new ResponseEntity<>(new Message("NOT_HAVE_PERMISSION_TO_DELETE"), HttpStatus.BAD_REQUEST);
+            }
+            String fileName = profileImages.getProfileURL();
+            s3Uploader.deleteS3(fileName);
+            profileImagesRepository.deleteById(profileImageId);
+            return new ResponseEntity<>(new Message("SUCCESS"), HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            log.error(e.getMessage());
+            return new ResponseEntity<>(new Message("IMAGES_DOES_NOT_EXISTS"), HttpStatus.BAD_REQUEST);
         }
-
-        profileImagesRepository.deleteById(profileImageId);
-        message.setMessage("SUCCESS");
-        return new ResponseEntity<>(message, HttpStatus.OK);
     }
 
     private boolean checkToken(HttpServletRequest request){
         String token = request.getHeader("Authorization");
         return jwt.checkClaim(token);
+    }
+
+    private boolean checkProfileUser(Users user){
+        if (profileRepository.findByUser(user) != null) return true;
+        return false;
     }
 
     private Long getSnsId(HttpServletRequest request){
@@ -180,14 +195,14 @@ public class ProfileService {
     }
 
     private Users getUser(Long snsId) {
-        Users users = usersRepository.getBySnsId(snsId)
+        Users user = usersRepository.getBySnsId(snsId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다."));
-        return users;
+        return user;
     }
 
     private Profile findProfile(Long profileId) {
         Profile profile = profileRepository.findById(profileId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 프로필이 없습니다. id="));
+                .orElseThrow(() -> new IllegalArgumentException("해당 프로필이 없습니다. id="+profileId));
         return profile;
     }
 
@@ -198,11 +213,27 @@ public class ProfileService {
         return profile.getId();
     }
 
-//    private boolean isEqualProfileUserIdUserId(Users user, Profile profile){
-//        if (profile.getUser().getId() == user.getId()) {
-//            return true;
-//        }
-//        return false;
-//    }
+    private List<String> getUrls(List<MultipartFile> multipartFiles) throws IOException{
+        List<String> urls = new ArrayList<>();
+        for(MultipartFile file: multipartFiles) {
+            urls.add(s3Uploader.upload(file,"profile"));
+        }
+        return urls;
+    }
+
+    private List<ProfileImages> getProfileImagesList (Profile profile, List<String> urls){
+        List<ProfileImages> profileimages = new ArrayList<>();
+        for(String url:urls){
+            ProfileImages profileImages = new ProfileImages(profile,url);
+            profileimages.add(profileImages);
+        }
+        return profileimages;
+    }
+
+    private ProfileImages getProfileImages(Long profileImagesId){
+        ProfileImages profileImages = profileImagesRepository.findById(profileImagesId)
+                .orElseThrow(() -> new IllegalArgumentException("IMAGES_DOES_NOT_EXISTS"));
+        return profileImages;
+    }
 
 }

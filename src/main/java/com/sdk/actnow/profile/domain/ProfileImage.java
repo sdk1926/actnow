@@ -15,7 +15,7 @@ public class ProfileImage {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(cascade = CascadeType.REMOVE)
+    @OneToOne()
     @JoinColumn(name = "profile_id", unique = true, nullable = false)
     private Profile profile;
 
@@ -26,5 +26,9 @@ public class ProfileImage {
     public ProfileImage(Profile profile, String profileURL){
         this.profile = profile;
         this.profileURL = profileURL;
+    }
+
+    public void update(String url) {
+        this.profileURL = url;
     }
 }

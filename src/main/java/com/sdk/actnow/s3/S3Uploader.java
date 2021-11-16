@@ -2,6 +2,7 @@ package com.sdk.actnow.s3;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.Upload;
@@ -49,9 +50,7 @@ public class S3Uploader {
 
     private String putS3(File uploadFile, String fileName) {
         final TransferManager transferManager = new TransferManager(this.amazonS3Client);
-        // 업로드 시도
         final Upload upload =  transferManager.upload(new PutObjectRequest(bucket, fileName, uploadFile));
-
         try {
             upload.waitForCompletion();
         } catch (AmazonClientException amazonClientException) {
@@ -63,21 +62,13 @@ public class S3Uploader {
         return url;
     }
 
-//    private String deleteS3(String fileName) {
-//        final TransferManager transferManager = new TransferManager(this.amazonS3Client);
-//        // 업로드 시도
-//        final Upload upload =  transferManager.upload(new PutObjectRequest(bucket, fileName, uploadFile));
-//
-//        try {
-//            upload.waitForCompletion();
-//        } catch (AmazonClientException amazonClientException) {
-//            log.error(amazonClientException.getMessage());
-//        } catch (InterruptedException e) {
-//            log.error(e.getMessage());
-//        }
-//        String url = "https://actnow-bucket.s3.ap-northeast-2.amazonaws.com/"+fileName;
-//        return url;
-//    }
+    public void deleteS3(String fileName) {
+        String s3FileName = fileName.substring(54,fileName.length());
+        boolean isExistObject = amazonS3Client.doesObjectExist(bucket, s3FileName);
+        if (isExistObject) {
+            amazonS3Client.deleteObject(new DeleteObjectRequest(bucket, s3FileName));
+        }
+    }
 
     private void removeNewFile(File targetFile) {
         if (targetFile.delete()) {

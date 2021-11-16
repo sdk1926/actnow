@@ -1,17 +1,21 @@
 package com.sdk.actnow.jwt;
 
 import io.jsonwebtoken.*;
+import lombok.extern.slf4j.Slf4j;
+
+import javax.servlet.http.HttpServletRequest;
 import java.util.Calendar;
 import java.util.Date;
 
+@Slf4j
 public class Jwt {
 
-    private static final String secretKey = "secretKey";
+    private String secretKey = "fewseighiuwrgh";
 
     public String makeJwtToken(long id) {
         Date now = new Date();
         Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.DATE,7);
+        cal.add(Calendar.DATE,1);
 
         return Jwts.builder()
                 .setHeaderParam(Header.TYPE,Header.JWT_TYPE)
@@ -30,10 +34,10 @@ public class Jwt {
                     .parseClaimsJws(jwt).getBody();
             return true;
         } catch (ExpiredJwtException e) {
-            System.out.println("Token Expired");  // 로그 배우고 리팩토링 하기
+            log.error(e.getMessage());
             return false;
         } catch (JwtException e) {
-            System.out.println("Token Error");
+            log.error(e.getMessage());
             return false;
         }
     }
@@ -44,4 +48,5 @@ public class Jwt {
                 .parseClaimsJws(jwt).getBody();
         return claims;
     }
+
 }
