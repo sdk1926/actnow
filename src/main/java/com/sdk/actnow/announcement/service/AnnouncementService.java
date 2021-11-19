@@ -1,7 +1,10 @@
 package com.sdk.actnow.announcement.service;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sdk.actnow.announcement.domain.Announcement;
 import com.sdk.actnow.announcement.domain.AnnouncementRepository;
 import com.sdk.actnow.announcement.dto.AnnouncementRequestDto;
+import com.sdk.actnow.announcement.dto.AnnouncementResponseDto;
 import com.sdk.actnow.jwt.Jwt;
 import com.sdk.actnow.oauth.domain.users.Users;
 import com.sdk.actnow.oauth.domain.users.UsersRepository;
@@ -38,6 +41,18 @@ public class AnnouncementService {
         }
     }
 
+    @Transactional
+    public ResponseEntity findById(Long id, HttpServletRequest request) {
+        try {
+            Announcement announcement = findAnnouncementById(id);
+            AnnouncementResponseDto announcementResponseDto = new AnnouncementResponseDto(announcement);
+            return new ResponseEntity(announcementResponseDto,HttpStatus.OK);
+        } catch (IllegalArgumentException e){
+            log.error(e.getMessage());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
     private boolean checkToken(HttpServletRequest request){
         String token = request.getHeader("Authorization");
         return jwt.checkClaim(token);
@@ -54,4 +69,9 @@ public class AnnouncementService {
         return user;
     }
 
+    private Announcement findAnnouncementById(Long id) {
+        Announcement announcement = announcementRepository.findById(id).orElseThrow(()->
+                new IllegalArgumentException("ANNOUNCEMENT_NOT_EXIST"));
+        return announcement;
+    }
 }

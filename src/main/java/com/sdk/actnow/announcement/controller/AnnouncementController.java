@@ -1,6 +1,7 @@
 package com.sdk.actnow.announcement.controller;
 
 import com.sdk.actnow.announcement.dto.AnnouncementRequestDto;
+import com.sdk.actnow.announcement.dto.AnnouncementResponseDto;
 import com.sdk.actnow.announcement.service.AnnouncementService;
 import com.sdk.actnow.util.Message;
 import lombok.RequiredArgsConstructor;
@@ -23,4 +24,9 @@ public class AnnouncementController {
         return announcementService.save(announcementRequestDto,requset);
     }
 
+    @GetMapping("/api/v1/announcement/{announcementId}")
+    public ResponseEntity findById(@PathVariable(value = "announcementId")Long announcementId,
+                                                            HttpServletRequest request) {
+        return announcementService.findById(announcementId,request);
+    }
 }
