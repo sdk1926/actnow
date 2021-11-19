@@ -5,6 +5,9 @@ import io.jsonwebtoken.Claims;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.web.WebAppConfiguration;
+
+import java.time.LocalDate;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @WebAppConfiguration
@@ -19,9 +22,8 @@ public class JwtTest {
         // given
         String token = jwt.makeJwtToken(8);
         System.out.println(token);
-        String s = "https://actnow-bucket.s3.ap-northeast-2.amazonaws.com/profile/0c0cf4e947ac43dcb3327546f3c0e8d7서핑1.jpeg.jpg";
-        System.out.println(s.length());
-        System.out.println(s.substring(53,s.length()));
+        LocalDate date = LocalDate.of(2018,3,3);
+        System.out.println(date);
 
         // when
         boolean checkClaim = jwt.checkClaim(token);
