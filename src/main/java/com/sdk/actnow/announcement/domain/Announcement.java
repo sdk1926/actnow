@@ -1,5 +1,6 @@
 package com.sdk.actnow.announcement.domain;
 
+import com.sdk.actnow.announcement.dto.AnnouncementRequestDto;
 import com.sdk.actnow.oauth.domain.users.Users;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,7 +18,7 @@ public class Announcement {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private Users user;
 
@@ -86,4 +87,17 @@ public class Announcement {
         this.details = details;
     }
 
+    public void update(AnnouncementRequestDto announcementRequestDto){
+        this.name = announcementRequestDto.getName();
+        this.kind = announcementRequestDto.getKind();
+        this.directorName = announcementRequestDto.getDirectorName();
+        this.role = announcementRequestDto.getRole();
+        this.age  = announcementRequestDto.getAge();
+        this.shootingPeriod = announcementRequestDto.getShootingPeriod();
+        this.pay = announcementRequestDto.getPay();
+        this.maanger = announcementRequestDto.getManager();
+        this.email = announcementRequestDto.getEmail();
+        this.deadline = announcementRequestDto.getDeadline();
+        this.details = announcementRequestDto.getDetails();
+    }
 }

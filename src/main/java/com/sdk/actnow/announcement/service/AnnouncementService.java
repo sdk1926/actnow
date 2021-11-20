@@ -11,6 +11,8 @@ import com.sdk.actnow.oauth.domain.users.UsersRepository;
 import com.sdk.actnow.util.Message;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -42,7 +44,7 @@ public class AnnouncementService {
     }
 
     @Transactional
-    public ResponseEntity findById(Long id, HttpServletRequest request) {
+    public ResponseEntity findById(Long id) {
         try {
             Announcement announcement = findAnnouncementById(id);
             AnnouncementResponseDto announcementResponseDto = new AnnouncementResponseDto(announcement);
@@ -50,6 +52,58 @@ public class AnnouncementService {
         } catch (IllegalArgumentException e){
             log.error(e.getMessage());
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @Transactional
+    public ResponseEntity findAll(Pageable pageable) {
+        Page<Announcement> announcements = announcementRepository.findAll(pageable);
+        Page<AnnouncementResponseDto> announcementResponseDtos = announcements.map(
+                announcement -> AnnouncementResponseDto.builder()
+                        .id(announcement.getId())
+                        .name(announcement.getName())
+                        .kind(announcement.getKind())
+                        .directorName(announcement.getDirectorName())
+                        .role(announcement.getRole())
+                        .age(announcement.getAge())
+                        .shootingPeriod(announcement.getShootingPeriod())
+                        .pay(announcement.getPay())
+                        .manager(announcement.getMaanger())
+                        .email(announcement.getEmail())
+                        .deadline(announcement.getDeadline())
+                        .details(announcement.getDetails())
+                        .build());
+        return new ResponseEntity(announcementResponseDtos,HttpStatus.OK);
+    }
+
+    @Transactional
+    public ResponseEntity<Message> update(Long announcementId, AnnouncementRequestDto announcementRequestDto,HttpServletRequest request) {
+        try{
+            if (!checkToken(request)){ return new ResponseEntity<>(new Message("WRONG_TOKEN"), HttpStatus.BAD_REQUEST); }
+            Users user = getUser(getSnsId(request));
+            Announcement announcement = findAnnouncementById(announcementId);
+            if (!announcement.getUser().equals(user)){return new ResponseEntity<>(new Message("WRONG_ACCESS"),HttpStatus.BAD_REQUEST);}
+            System.out.println(announcementRequestDto.getDeadline());
+            announcement.update(announcementRequestDto);
+            return new ResponseEntity<>(new Message("SUCCESS",announcement.getId()),HttpStatus.OK);
+        } catch (IllegalArgumentException e){
+            log.error(e.getMessage());
+            return new ResponseEntity<>(new Message("WRONG_ACCESS"), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @Transactional
+    public ResponseEntity<Message> delete(Long announcementId, HttpServletRequest request) {
+        try{
+            if (!checkToken(request)){ return new ResponseEntity<>(new Message("WRONG_TOKEN"), HttpStatus.BAD_REQUEST); }
+            Users user = getUser(getSnsId(request));
+            Announcement announcement = findAnnouncementById(announcementId);
+            if (!announcement.getUser().equals(user)){return new ResponseEntity<>(new Message("WRONG_ACCESS"),HttpStatus.BAD_REQUEST);}
+            announcementRepository.deleteById(announcementId);
+            return new ResponseEntity<>(new Message("SUCCESS",announcement.getId()),HttpStatus.OK);
+        } catch (IllegalArgumentException e){
+            log.error(e.getMessage());
+            return new ResponseEntity<>(new Message("WRONG_ACCESS"), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -67,6 +121,12 @@ public class AnnouncementService {
         Users user = usersRepository.getBySnsId(snsId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다."));
         return user;
+    }
+
+    private Announcement findAnnouncementByUser(Users user) {
+        Announcement announcement = announcementRepository.findByUser(user)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 공고입니다."));
+        return announcement;
     }
 
     private Announcement findAnnouncementById(Long id) {
