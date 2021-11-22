@@ -1,5 +1,6 @@
 package com.sdk.actnow.profile.domain;
 
+import com.sdk.actnow.profile.dto.CareerDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,7 +16,7 @@ public class Career {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(cascade = CascadeType.REMOVE)
+    @ManyToOne
     @JoinColumn(name = "profile_id")
     private Profile profile;
 
@@ -38,5 +39,12 @@ public class Career {
         this.name = name;
         this.role = role;
         this.category = category;
+    }
+
+    public void update(CareerDto careerDto) {
+        this.year = careerDto.getYear();
+        this.name = careerDto.getName();
+        this.role = careerDto.getRole();
+        this.category = careerDto.getCategory();
     }
 }

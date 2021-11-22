@@ -51,7 +51,7 @@ public class AnnouncementService {
             return new ResponseEntity(announcementResponseDto,HttpStatus.OK);
         } catch (IllegalArgumentException e){
             log.error(e.getMessage());
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Message(e.getMessage()),HttpStatus.BAD_REQUEST);
         }
     }
 

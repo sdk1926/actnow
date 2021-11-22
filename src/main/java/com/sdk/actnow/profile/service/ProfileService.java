@@ -2,15 +2,14 @@ package com.sdk.actnow.profile.service;
 
 import com.sdk.actnow.oauth.domain.users.Users;
 import com.sdk.actnow.oauth.domain.users.UsersRepository;
-import com.sdk.actnow.profile.dto.ProfileListResponseDto;
-import com.sdk.actnow.profile.dto.ProfileRequestDto;
+import com.sdk.actnow.profile.dto.*;
 import com.sdk.actnow.jwt.Jwt;
 import com.sdk.actnow.profile.domain.*;
-import com.sdk.actnow.profile.dto.ProfileResponseDto;
 import com.sdk.actnow.s3.S3Uploader;
 import com.sdk.actnow.util.Message;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.protocol.HTTP;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -139,11 +138,10 @@ public class ProfileService {
     }
 
     @Transactional
-    public ResponseEntity<Message> updateImage(Long profileImageId, MultipartFile multipartFile, HttpServletRequest request) throws IOException{
+    public ResponseEntity<Message> updateImage(Long profileImageId, MultipartFile multipartFile,
+                                               HttpServletRequest request) throws IOException{
         try {
-            if (!checkToken(request)) {
-                return new ResponseEntity<>(new Message("WRONG_TOKEN"), HttpStatus.BAD_REQUEST);
-            }
+            if (!checkToken(request)) { return new ResponseEntity<>(new Message("WRONG_TOKEN"), HttpStatus.BAD_REQUEST);}
             ProfileImage profileImage = profileImageRepository.findById(profileImageId).orElseThrow(()-> new IllegalArgumentException("이미지 없음"));
             Users user = getUser(getSnsId(request));
             if (!profileImage.getProfile().getUser().equals(user)) {
@@ -158,6 +156,99 @@ public class ProfileService {
             return new ResponseEntity<>(new Message("PROFILE_DOES_NOT_EXISTS"),HttpStatus.BAD_REQUEST);
         }
     }
+
+    @Transactional
+    public ResponseEntity<Message> updateSpecialty(Long specialtyId, SpecialtyRequestDto specialtyRequestDto,
+                                                   HttpServletRequest request) {
+        try {
+            if (!checkToken(request)) { return new ResponseEntity<>(new Message("WRONG_TOKEN"), HttpStatus.BAD_REQUEST);}
+            Users user = getUser(getSnsId(request));
+            Specialty specialty = findSpecialty(specialtyId);
+            if(!specialty.getProfile().getUser().equals(user)) {
+                return new ResponseEntity<>(new Message("WRONG_ACCESS"), HttpStatus.BAD_REQUEST);
+            }
+            specialty.update(specialtyRequestDto);
+            return new ResponseEntity<>(new Message("SUCCESS"), HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            log.error(e.getMessage());
+            return new ResponseEntity<>(new Message(e.getMessage()),HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @Transactional
+    public ResponseEntity<Message> updateCareer(Long careerId, CareerDto careerDto, HttpServletRequest request) {
+        try {
+            if (!checkToken(request)) {
+                return new ResponseEntity<>(new Message("WRONG_TOKEN"), HttpStatus.BAD_REQUEST);
+            }
+            Career career = findCareer(careerId);
+            Users user = getUser(getSnsId(request));
+            if (!career.getProfile().getUser().equals(user)) {
+                return new ResponseEntity<>(new Message("WRONG_ACCESS"), HttpStatus.BAD_REQUEST);
+            }
+            career.update(careerDto);
+            return new ResponseEntity<>(new Message("SUCCESS"), HttpStatus.OK);
+        } catch (IllegalArgumentException e){
+            log.error(e.getMessage());
+            return new ResponseEntity<>(new Message(e.getMessage()), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @Transactional
+    public ResponseEntity<Message> delete(Long profileId, HttpServletRequest request) {
+        try {
+            if (!checkToken(request)) {
+                return new ResponseEntity<>(new Message("WRONG_TOKEN"), HttpStatus.BAD_REQUEST);
+            }
+            Profile profile = findProfile(profileId);
+            Users user = getUser(getSnsId(request));
+            if (!profile.getUser().equals(user)) {
+                return new ResponseEntity<>(new Message("WWORNG_ACCESS"), HttpStatus.BAD_REQUEST);
+            }
+            profileRepository.deleteById(profileId);
+            return new ResponseEntity<>(new Message("SUCCESS"), HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            log.error(e.getMessage());
+            return new ResponseEntity<>(new Message(e.getMessage()), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @Transactional
+    public ResponseEntity<Message> deleteSpecialty(Long specialtyId, HttpServletRequest request) {
+        try {
+            if (!checkToken(request)) { return new ResponseEntity<>(new Message("WRONG_TOKEN"), HttpStatus.BAD_REQUEST);}
+            Users user = getUser(getSnsId(request));
+            Specialty specialty = findSpecialty(specialtyId);
+            if(!specialty.getProfile().getUser().equals(user)) {
+                return new ResponseEntity<>(new Message("WRONG_ACCESS"), HttpStatus.BAD_REQUEST);
+            }
+            specialtyRepository.deleteById(specialtyId);
+            return new ResponseEntity<>(new Message("SUCCESS"), HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            log.error(e.getMessage());
+            return new ResponseEntity<>(new Message(e.getMessage()),HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @Transactional
+    public ResponseEntity<Message> deleteCareer(Long careerId, HttpServletRequest request) {
+        try {
+            if (!checkToken(request)) {
+                return new ResponseEntity<>(new Message("WRONG_TOKEN"), HttpStatus.BAD_REQUEST);
+            }
+            Career career = findCareer(careerId);
+            Users user = getUser(getSnsId(request));
+            if (!career.getProfile().getUser().equals(user)) {
+                return new ResponseEntity<>(new Message("WRONG_ACCESS"), HttpStatus.BAD_REQUEST);
+            }
+            careerRepository.deleteById(careerId);
+            return new ResponseEntity<>(new Message("SUCCESS"), HttpStatus.OK);
+        } catch (IllegalArgumentException e){
+            log.error(e.getMessage());
+            return new ResponseEntity<>(new Message(e.getMessage()), HttpStatus.BAD_REQUEST);
+        }
+    }
+
 
     @Transactional
     public ResponseEntity<Message> deleteImages(long profileImageId,HttpServletRequest request) {
@@ -196,14 +287,26 @@ public class ProfileService {
 
     private Users getUser(Long snsId) {
         Users user = usersRepository.getBySnsId(snsId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다."));
+                .orElseThrow(() -> new IllegalArgumentException("USER_DOES_NOT_EXISTS"));
         return user;
     }
 
     private Profile findProfile(Long profileId) {
         Profile profile = profileRepository.findById(profileId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 프로필이 없습니다. id="+profileId));
+                .orElseThrow(() -> new IllegalArgumentException("PROFILE_DOES_NOT_EXISTS_ID="+profileId));
         return profile;
+    }
+
+    private Specialty findSpecialty(Long specialtyId) {
+        Specialty specialty = specialtyRepository.findById(specialtyId)
+                .orElseThrow(() -> new IllegalArgumentException("SPECIALTY_DOES_NOT_EXISTS"));
+        return specialty;
+    }
+
+    private Career findCareer(Long careerId) {
+        Career career = careerRepository.findById(careerId)
+                .orElseThrow(() -> new IllegalArgumentException("CAREER_DOES_NOT_EXISTS"));
+        return career;
     }
 
     private Long saveProfile(ProfileRequestDto profileRequestDto, Users user) {

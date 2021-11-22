@@ -7,4 +7,5 @@ import java.util.Optional;
 
 public interface SpecialtyRepository extends JpaRepository<Specialty,Long> {
     List<Specialty> findAllByProfileId(long profileId);
+    void deleteAllByProfileId(Long profileId);
 }
