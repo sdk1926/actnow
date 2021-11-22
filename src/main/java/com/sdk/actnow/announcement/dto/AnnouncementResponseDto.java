@@ -14,6 +14,7 @@ import java.time.LocalDate;
 public class AnnouncementResponseDto {
 
     private Long id;
+    private String title;
     private String name;
     private String kind;
     private String directorName;
@@ -31,6 +32,7 @@ public class AnnouncementResponseDto {
     @Builder
     public AnnouncementResponseDto(
             Long id,
+            String title,
             String name,
             String kind,
             String directorName,
@@ -44,6 +46,7 @@ public class AnnouncementResponseDto {
             String details
     ){
         this.id = id;
+        this.title = title;
         this.name = name;
         this.kind = kind;
         this.directorName = directorName;
@@ -59,6 +62,7 @@ public class AnnouncementResponseDto {
 
     public AnnouncementResponseDto(Announcement announcement){
         this.id = announcement.getId();
+        this.title = announcement.getTitle();
         this.name = announcement.getName();
         this.kind = announcement.getKind();
         this.directorName = announcement.getDirectorName();
@@ -76,6 +80,7 @@ public class AnnouncementResponseDto {
     public String toString() {
         return "{" +
                 "id=" + id +
+                ", title='" + title + '\'' +
                 ", name='" + name + '\'' +
                 ", kind='" + kind + '\'' +
                 ", directorName='" + directorName + '\'' +

@@ -1,18 +1,29 @@
 package com.sdk.actnow.jwt;
 
 import io.jsonwebtoken.*;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Calendar;
 import java.util.Date;
 
 @Slf4j
+@Component
 public class Jwt {
 
-    private String secretKey = "fewseighiuwrgh";
+    private static String secretKey;
 
-    public String makeJwtToken(long id) {
+    @Value("${jwt.secret_key}")
+    public void setKey(String value) {
+        secretKey = value;
+        }
+
+    public static String makeJwtToken(long id) {
         Date now = new Date();
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DATE,1);
@@ -27,7 +38,7 @@ public class Jwt {
                 .compact();
     }
 
-    public boolean checkClaim(String jwt) {
+    public static boolean checkClaim(String jwt) {
         try {
             Claims claims = Jwts.parser()
                     .setSigningKey(secretKey.getBytes())
@@ -42,7 +53,7 @@ public class Jwt {
         }
     }
 
-    public Claims getJwtContents(String jwt) {
+    public static Claims getJwtContents(String jwt) {
         Claims claims = Jwts.parser()
                 .setSigningKey(secretKey.getBytes())
                 .parseClaimsJws(jwt).getBody();

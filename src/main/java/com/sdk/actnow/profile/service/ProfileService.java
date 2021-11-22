@@ -35,13 +35,15 @@ public class ProfileService {
     private final ProfileImageRepository profileImageRepository;
     private final ProfileImagesRepository profileImagesRepository;
     private final S3Uploader s3Uploader;
-    private final Jwt jwt = new Jwt();
+    private final Jwt jwt;
 
     @Transactional
     public ResponseEntity<Message> save(ProfileRequestDto profileRequestDto, HttpServletRequest request){
         try {
             if (!checkToken(request)){ return new ResponseEntity<>(new Message("WRONG_TOKEN"), HttpStatus.BAD_REQUEST); }
+
             Users user = getUser(getSnsId(request));
+
             if (checkProfileUser(user)){
                 return new ResponseEntity<>(new Message("PROFILE_ALREADY_EXISTS"), HttpStatus.BAD_REQUEST);
             }
@@ -53,14 +55,36 @@ public class ProfileService {
     }
 
     @Transactional
+    public ResponseEntity<Message> saveSpecialty(Long profileId,
+                                                 SpecialtyRequestDto specialtyRequestDto,
+                                                 HttpServletRequest request) {
+        try {
+            Profile profile = findProfile(profileId);
+            Users users = getUser(getSnsId(request));
+
+            if (!profile.getUser().equals(users)) {return new ResponseEntity<>(new Message("WRONG_ACCESS"), HttpStatus.BAD_REQUEST);}
+
+            Specialty specialty = Specialty.builder()
+                    .profile(profile)
+                    .name(specialtyRequestDto.getSpecialty())
+                    .build();
+            Specialty savedSpecialty = specialtyRepository.save(specialty);
+            return new ResponseEntity<>(new Message("SUCCESS", savedSpecialty.getId()), HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            log.error(e.getMessage());
+            return new ResponseEntity<>(new Message(e.getMessage()), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @Transactional
     public ResponseEntity<Message> saveImage(long profileId, MultipartFile multipartFile,
                                              HttpServletRequest request) throws IOException{
         try {
-            if (!checkToken(request)) {
-                return new ResponseEntity<>(new Message("WRONG_TOKEN"), HttpStatus.BAD_REQUEST);
-            }
+            if (!checkToken(request)) { return new ResponseEntity<>(new Message("WRONG_TOKEN"), HttpStatus.BAD_REQUEST); }
+
             Profile profile = findProfile(profileId);
             Users user = getUser(getSnsId(request));
+
             if (!profile.getUser().getId().equals(user.getId())) {
                 return new ResponseEntity<>(new Message("WRONG_ACCESS"), HttpStatus.BAD_REQUEST);
             }

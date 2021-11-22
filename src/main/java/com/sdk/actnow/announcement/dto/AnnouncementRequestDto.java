@@ -16,6 +16,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class AnnouncementRequestDto {
 
+    private String title;
     private String name;
     private String kind;
     private String directorName;
@@ -32,6 +33,7 @@ public class AnnouncementRequestDto {
 
     @Builder
     public AnnouncementRequestDto(
+            String title,
             String name,
             String kind,
             String directorName,
@@ -44,6 +46,7 @@ public class AnnouncementRequestDto {
             LocalDate deadline,
             String details
     ){
+        this.title = title;
         this.name = name;
         this.kind = kind;
         this.directorName = directorName;
@@ -60,6 +63,7 @@ public class AnnouncementRequestDto {
     public Announcement toEntity(Users user){
         Announcement announcement = Announcement.builder()
                 .user(user)
+                .title(this.title)
                 .name(this.name)
                 .kind(this.kind)
                 .directorName(this.directorName)

@@ -1,6 +1,4 @@
 package com.sdk.actnow.announcement.service;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sdk.actnow.announcement.domain.Announcement;
 import com.sdk.actnow.announcement.domain.AnnouncementRepository;
 import com.sdk.actnow.announcement.dto.AnnouncementRequestDto;
@@ -27,7 +25,7 @@ public class AnnouncementService {
 
     private final AnnouncementRepository announcementRepository;
     private final UsersRepository usersRepository;
-    private final Jwt jwt = new Jwt();
+    private final Jwt jwt;
 
     @Transactional
     public ResponseEntity<Message> save(AnnouncementRequestDto announcementRequestDto, HttpServletRequest request) {
@@ -61,6 +59,7 @@ public class AnnouncementService {
         Page<AnnouncementResponseDto> announcementResponseDtos = announcements.map(
                 announcement -> AnnouncementResponseDto.builder()
                         .id(announcement.getId())
+                        .title(announcement.getTitle())
                         .name(announcement.getName())
                         .kind(announcement.getKind())
                         .directorName(announcement.getDirectorName())

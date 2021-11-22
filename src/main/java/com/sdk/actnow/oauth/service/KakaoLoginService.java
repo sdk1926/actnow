@@ -2,7 +2,6 @@ package com.sdk.actnow.oauth.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sdk.actnow.oauth.KakaoConfig;
 import com.sdk.actnow.oauth.domain.users.Users;
 import com.sdk.actnow.oauth.domain.users.UsersRepository;
 import com.sdk.actnow.oauth.dto.JwtResponseDto;
@@ -11,7 +10,7 @@ import com.sdk.actnow.oauth.KakaoProfile;
 import com.sdk.actnow.oauth.OauthToken;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -29,12 +28,18 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public class KakaoLoginService {
 
-    private static final String CLIENT_ID = KakaoConfig.CLIENT_ID;
-    private static final String CLIENT_SECRET = KakaoConfig.CLIENT_SECRET;
-    private static final String REDIRECT_URL = KakaoConfig.REDIRECT_URL;
+    @Value( "${kakao.client_id}" )
+    private String CLIENT_ID;
+
+    @Value("${kakao.client_secret}")
+    private String CLIENT_SECRET;
+
+    @Value("${kakao.redirect_uri}")
+    private String REDIRECT_URL;
+
     private final ObjectMapper objectMapper;
     private final UsersRepository usersRepository;
-    private final Jwt jwt = new Jwt();
+    private final Jwt jwt;
 
     @Transactional
     public JwtResponseDto save(String code){

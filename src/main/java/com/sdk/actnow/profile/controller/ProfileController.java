@@ -1,9 +1,7 @@
 package com.sdk.actnow.profile.controller;
 
-import com.sdk.actnow.profile.dto.CareerDto;
-import com.sdk.actnow.profile.dto.ProfileRequestDto;
-import com.sdk.actnow.profile.dto.ProfileResponseDto;
-import com.sdk.actnow.profile.dto.SpecialtyRequestDto;
+import com.sdk.actnow.profile.domain.Specialty;
+import com.sdk.actnow.profile.dto.*;
 import com.sdk.actnow.profile.service.ProfileService;
 import com.sdk.actnow.util.Message;
 import lombok.RequiredArgsConstructor;
@@ -42,7 +40,14 @@ public class ProfileController {
         return profileService.save(profileRequestDto,requset);
     }
 
-    @PostMapping("api/v1/profile/image/{profileId}")
+    @PostMapping("/api/v1/profile/{profileId}/specialty")
+    public ResponseEntity<Message> saveSpecialty(@PathVariable(value = "profileId")Long profileId,
+                                                 @RequestBody SpecialtyRequestDto specialtyRequestDto,
+                                                 HttpServletRequest request) {
+        return profileService.saveSpecialty(profileId, specialtyRequestDto, request);
+    }
+
+    @PostMapping("/api/v1/profile/image/{profileId}")
     public ResponseEntity<Message> saveImage(@PathVariable(value = "profileId")Long profileId,
                                           @RequestPart(value = "profile") MultipartFile multipartFile,
                                           HttpServletRequest request) throws IOException {
@@ -50,7 +55,7 @@ public class ProfileController {
         return profileService.saveImage(profileId, multipartFile, request);
     }
 
-    @PostMapping("api/v1/profile/images/{profileId}")
+    @PostMapping("/api/v1/profile/images/{profileId}")
     public ResponseEntity<Message> saveImages(@PathVariable(value = "profileId")long profileId,
                                               @RequestPart(value = "profiles")List<MultipartFile> multipartFiles,
                                               HttpServletRequest request) throws IOException {
@@ -65,14 +70,14 @@ public class ProfileController {
         return profileService.update(profileId,profileRequestDto,request);
     }
 
-    @PutMapping("api/v1/profile/specialty/{specialtyId}")
+    @PutMapping("/api/v1/profile/specialty/{specialtyId}")
     public ResponseEntity<Message> updateSpecialty(@PathVariable(value = "specialtyId")Long speicaltyId,
                                                    @RequestBody SpecialtyRequestDto specialtyRequestDto,
                                                    HttpServletRequest request) {
         return profileService.updateSpecialty(speicaltyId,specialtyRequestDto,request);
     }
 
-    @PutMapping("api/v1/profile/career/{careerId}")
+    @PutMapping("/api/v1/profile/career/{careerId}")
     public ResponseEntity<Message> updateCareer(@PathVariable(value = "careerId")Long careerId,
                                                 @RequestBody CareerDto careerDto,
                                                 HttpServletRequest request) {
@@ -86,25 +91,25 @@ public class ProfileController {
         return profileService.updateImage(profileImageId, multipartFile, request);
     }
 
-    @DeleteMapping("api/v1/profile/{profileId}")
+    @DeleteMapping("/api/v1/profile/{profileId}")
     public ResponseEntity<Message> deleteProfile(@PathVariable(value = "profileId")Long profileId,
                                                  HttpServletRequest request) {
         return profileService.delete(profileId, request);
     }
 
-    @DeleteMapping("api/v1/profile/specialty/{specialtyId}")
+    @DeleteMapping("/api/v1/profile/specialty/{specialtyId}")
     public ResponseEntity<Message> deleteSpecialty(@PathVariable(value = "specialtyId")Long specialtyId,
                                                    HttpServletRequest request) {
         return profileService.deleteSpecialty(specialtyId, request);
     }
 
-    @DeleteMapping("api/v1/profile/career/{careerId}")
+    @DeleteMapping("/api/v1/profile/career/{careerId}")
     public ResponseEntity<Message> deleteCareer(@PathVariable(value = "careerId")Long careerId,
                                                 HttpServletRequest request) {
         return profileService.deleteCareer(careerId, request);
     }
 
-    @DeleteMapping("api/v1/profile/images/{profileImageId}")
+    @DeleteMapping("/api/v1/profile/images/{profileImageId}")
     public ResponseEntity<Message> deleteImages(@PathVariable(value = "profileImageId")Long profileImageId,
                                           HttpServletRequest request) throws IOException{
         return profileService.deleteImages(profileImageId,request);

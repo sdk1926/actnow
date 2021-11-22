@@ -22,6 +22,9 @@ public class Announcement {
     @JoinColumn(name = "user_id", nullable = false)
     private Users user;
 
+    @Column
+    private String title;
+
     @Column(length = 256)
     private String name;
 
@@ -61,6 +64,7 @@ public class Announcement {
     @Builder
     public Announcement(
             Users user,
+            String title,
             String name,
             String kind,
             String directorName,
@@ -74,6 +78,7 @@ public class Announcement {
             String details
     ){
         this.user = user;
+        this.title = title;
         this.name = name;
         this.kind = kind;
         this.directorName = directorName;
@@ -89,6 +94,7 @@ public class Announcement {
 
     public void update(AnnouncementRequestDto announcementRequestDto){
         this.name = announcementRequestDto.getName();
+        this.title = announcementRequestDto.getTitle();
         this.kind = announcementRequestDto.getKind();
         this.directorName = announcementRequestDto.getDirectorName();
         this.role = announcementRequestDto.getRole();

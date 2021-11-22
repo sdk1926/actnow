@@ -17,7 +17,8 @@ import javax.servlet.http.HttpServletRequest;
 @RestController
 public class JwtController {
 
-    Jwt jwt = new Jwt();
+    Jwt jwt;
+
     @GetMapping("api/v1/token")
     public ResponseEntity checkToken(HttpServletRequest request) {
         String token = request.getHeader("Authorization");
