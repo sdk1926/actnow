@@ -77,6 +77,31 @@ public class ProfileService {
     }
 
     @Transactional
+    public ResponseEntity<Message> saveCareer(Long profileId,
+                                              CareerRequestDto careerRequestDto,
+                                              HttpServletRequest request) {
+        try {
+            Profile profile = findProfile(profileId);
+            Users users = getUser(getSnsId(request));
+
+            if (!profile.getUser().equals(users)) {return new ResponseEntity<>(new Message("WRONG_ACCESS"), HttpStatus.BAD_REQUEST);}
+
+            Career career = Career.builder()
+                    .profile(profile)
+                    .year(careerRequestDto.getYear())
+                    .name(careerRequestDto.getName())
+                    .role(careerRequestDto.getRole())
+                    .category(careerRequestDto.getCategory())
+                    .build();
+            Career savedCareer = careerRepository.save(career);
+            return new ResponseEntity<>(new Message("SUCCESS", savedCareer.getId()), HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            log.error(e.getMessage());
+            return new ResponseEntity<>(new Message(e.getMessage()), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @Transactional
     public ResponseEntity<Message> saveImage(long profileId, MultipartFile multipartFile,
                                              HttpServletRequest request) throws IOException{
         try {

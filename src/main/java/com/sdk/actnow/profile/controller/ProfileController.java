@@ -63,6 +63,13 @@ public class ProfileController {
         return profileService.saveImages(profileId, multipartFiles,request);
     }
 
+    @PostMapping("/api/v1/profile/{profileId}/career")
+    public ResponseEntity<Message> saveCareer(@PathVariable(value = "profileId")Long profileId,
+                                              @RequestBody CareerRequestDto careerRequestDto,
+                                              HttpServletRequest request) {
+        return profileService.saveCareer(profileId, careerRequestDto, request);
+    }
+
     @PutMapping("/api/v1/profile/{profileId}")
     public ResponseEntity<Message> update(@PathVariable(value = "profileId")Long profileId,
                                           @RequestBody ProfileRequestDto profileRequestDto,

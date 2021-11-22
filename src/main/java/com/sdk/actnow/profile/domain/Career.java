@@ -17,7 +17,7 @@ public class Career {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "profile_id")
+    @JoinColumn(name = "profile_id",nullable = false)
     private Profile profile;
 
     @Column

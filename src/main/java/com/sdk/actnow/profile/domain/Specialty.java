@@ -21,7 +21,7 @@ public class Specialty extends BaseTimeEntity {
     private String name;
 
     @ManyToOne
-    @JoinColumn(name = "profile_id")
+    @JoinColumn(name = "profile_id", nullable = false)
     private Profile profile;
 
     @Builder
