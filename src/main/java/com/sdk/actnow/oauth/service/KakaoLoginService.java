@@ -4,17 +4,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sdk.actnow.oauth.domain.users.Users;
 import com.sdk.actnow.oauth.domain.users.UsersRepository;
-import com.sdk.actnow.oauth.dto.JwtResponseDto;
+import com.sdk.actnow.oauth.response.JwtResponse;
 import com.sdk.actnow.jwt.Jwt;
 import com.sdk.actnow.oauth.KakaoProfile;
 import com.sdk.actnow.oauth.OauthToken;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
@@ -42,7 +39,7 @@ public class KakaoLoginService {
     private final Jwt jwt;
 
     @Transactional
-    public JwtResponseDto save(String code){
+    public ResponseEntity<JwtResponse> save(String code){
         try {
             OauthToken accessToken = requestAuthCode(generateAuthCodeRequest(code)).getBody();
             String userProfileResponse = requestProfile(generateProfileRequest(accessToken)).getBody();
@@ -50,13 +47,13 @@ public class KakaoLoginService {
             long snsId = kakaoProfile.getId();
             saveUser(snsId,kakaoProfile);
             String token = jwt.makeJwtToken(snsId);
-            return new JwtResponseDto("SUCCESS",token);
+            return new ResponseEntity<>(new JwtResponse("SUCCESS",token), HttpStatus.OK);
         } catch (JsonProcessingException e) {
             log.error(e.getMessage());
-            return new JwtResponseDto("JsonParcingError");
+            return new ResponseEntity<>(new JwtResponse("JsonParcingError"),HttpStatus.BAD_REQUEST);
         } catch (HttpClientErrorException e) {
             log.error(e.getMessage());
-            return new JwtResponseDto("Wrong_token");
+            return new ResponseEntity<>(new JwtResponse("Wrong_token"),HttpStatus.BAD_REQUEST);
         }
     }
 

@@ -1,14 +1,10 @@
 package com.sdk.actnow.profile.dto;
 
 import com.sdk.actnow.profile.domain.Profile;
-import com.sdk.actnow.profile.domain.ProfileImage;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Getter
 @Setter
