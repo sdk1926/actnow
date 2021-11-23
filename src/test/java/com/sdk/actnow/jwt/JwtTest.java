@@ -11,7 +11,9 @@ import java.time.LocalDate;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @WebAppConfiguration
-@SpringBootTest
+@SpringBootTest(
+        properties = {"spring.config.location=classpath:application-test.properties"}
+)
 public class JwtTest {
 
     Jwt jwt = new Jwt();

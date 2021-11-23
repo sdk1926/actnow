@@ -13,7 +13,9 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
+@SpringBootTest(
+        properties = {"spring.config.location=classpath:application-test.properties"}
+)
 public class UserRepositoryTest {
 
     @Autowired

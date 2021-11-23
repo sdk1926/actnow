@@ -84,7 +84,7 @@ public class ProfileService {
             Profile profile = findProfile(profileId);
             Users users = getUser(getSnsId(request));
 
-            if (!profile.getUser().equals(users)) {return new ResponseEntity<>(new Message("WRONG_ACCESS"), HttpStatus.BAD_REQUEST);}
+            if (!profile.getUser().equals(users)) { return new ResponseEntity<>(new Message("WRONG_ACCESS"), HttpStatus.BAD_REQUEST);}
 
             Career career = Career.builder()
                     .profile(profile)
