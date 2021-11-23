@@ -1,5 +1,7 @@
 package com.sdk.actnow.announcement.domain;
 
+import com.sdk.actnow.oauth.domain.users.Users;
+import com.sdk.actnow.oauth.domain.users.UsersRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,13 +17,23 @@ public class AnnouncementRepositoryTest {
     @Autowired
     AnnouncementRepository announcementRepository;
 
+    @Autowired
+    UsersRepository usersRepository;
+
     @AfterEach
-    public void cleanup() {announcementRepository.deleteAllInBatch();}
+    public void cleanup() {
+        announcementRepository.deleteAllInBatch();
+        usersRepository.deleteAllInBatch();
+    }
 
     @DisplayName("공고저장_불러오기")
     @Test
     public void saveAnnouncementRead() {
         //given
+        long snsid = 15155315;
+        Users user = Users.builder().email("sdk@hsfwf.com").snsId(snsid).build();
+        usersRepository.save(user);
+        Users savedUser = usersRepository.getBySnsId(snsid).get();
         String name = "풀이 나지 않는 땅";
         String kind = "단편 영화";
         String directorName = "강소현";
@@ -35,6 +47,7 @@ public class AnnouncementRepositoryTest {
         String details = "많은 지원!";
 
         announcementRepository.save(Announcement.builder()
+                .user(savedUser)
                 .name(name)
                 .kind(kind)
                 .directorName(directorName)
