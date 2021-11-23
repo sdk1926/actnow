@@ -1,4 +1,4 @@
-package com.sdk.actnow.domain.users;
+package com.sdk.actnow.oauth.domain.users;
 
 import com.sdk.actnow.oauth.domain.users.Users;
 import com.sdk.actnow.oauth.domain.users.UsersRepository;

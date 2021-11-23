@@ -37,4 +37,6 @@ out/
 .vscode/
 
 application.properties
-KakakoConfig
+application-oauth.properties
+application-s3.properties
+application-test.properties
