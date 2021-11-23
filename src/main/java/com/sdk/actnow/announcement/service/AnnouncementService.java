@@ -69,6 +69,7 @@ public class AnnouncementService {
                         .pay(announcement.getPay())
                         .manager(announcement.getMaanger())
                         .email(announcement.getEmail())
+                        .gender(announcement.getGender())
                         .deadline(announcement.getDeadline())
                         .details(announcement.getDetails())
                         .build());

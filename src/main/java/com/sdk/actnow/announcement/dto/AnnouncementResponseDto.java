@@ -24,6 +24,7 @@ public class AnnouncementResponseDto {
     private String pay;
     private String manager;
     private String email;
+    private String gender;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     @JsonDeserialize(using = LocalDateDeserializer.class)
     private LocalDate deadline;
@@ -42,6 +43,7 @@ public class AnnouncementResponseDto {
             String pay,
             String manager,
             String email,
+            String gender,
             LocalDate deadline,
             String details
     ){
@@ -56,6 +58,7 @@ public class AnnouncementResponseDto {
         this.pay = pay;
         this.manager = manager;
         this.email = email;
+        this.gender = gender;
         this.deadline = deadline;
         this.details = details;
     }
@@ -72,6 +75,7 @@ public class AnnouncementResponseDto {
         this.pay = announcement.getPay();
         this.manager = announcement.getMaanger();
         this.email = announcement.getEmail();
+        this.gender = announcement.getGender();
         this.deadline = announcement.getDeadline();
         this.details = announcement.getDetails();
     }
@@ -90,6 +94,7 @@ public class AnnouncementResponseDto {
                 ", pay='" + pay + '\'' +
                 ", manager='" + manager + '\'' +
                 ", email='" + email + '\'' +
+                ", gender='" + gender + '\'' +
                 ", deadline=" + deadline +
                 ", details='" + details + '\'' +
                 '}';

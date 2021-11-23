@@ -26,6 +26,7 @@ public class AnnouncementRequestDto {
     private String pay;
     private String manager;
     private String email;
+    private String gender;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     @JsonDeserialize(using = LocalDateDeserializer.class)
     private LocalDate deadline;
@@ -43,6 +44,7 @@ public class AnnouncementRequestDto {
             String pay,
             String manager,
             String email,
+            String gender,
             LocalDate deadline,
             String details
     ){
@@ -56,6 +58,7 @@ public class AnnouncementRequestDto {
         this.pay = pay;
         this.manager = manager;
         this.email = email;
+        this.gender = gender;
         this.deadline = deadline;
         this.details = details;
     }
@@ -66,6 +69,7 @@ public class AnnouncementRequestDto {
                 .title(this.title)
                 .name(this.name)
                 .kind(this.kind)
+                .gender(this.gender)
                 .directorName(this.directorName)
                 .role(this.role)
                 .age(this.age)

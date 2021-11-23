@@ -74,6 +74,7 @@ public class Announcement {
             String pay,
             String manager,
             String email,
+            String gender,
             LocalDate deadline,
             String details
     ){
@@ -88,6 +89,7 @@ public class Announcement {
         this.pay = pay;
         this.maanger = manager;
         this.email = email;
+        this.gender = gender;
         this.deadline = deadline;
         this.details = details;
     }
@@ -103,6 +105,7 @@ public class Announcement {
         this.pay = announcementRequestDto.getPay();
         this.maanger = announcementRequestDto.getManager();
         this.email = announcementRequestDto.getEmail();
+        this.gender = announcementRequestDto.getGender();
         this.deadline = announcementRequestDto.getDeadline();
         this.details = announcementRequestDto.getDetails();
     }

@@ -1,6 +1,5 @@
 package com.sdk.actnow.profile.controller;
 
-import com.sdk.actnow.profile.domain.Specialty;
 import com.sdk.actnow.profile.dto.*;
 import com.sdk.actnow.profile.service.ProfileService;
 import com.sdk.actnow.util.Message;
