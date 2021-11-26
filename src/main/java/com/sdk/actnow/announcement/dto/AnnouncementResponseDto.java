@@ -15,6 +15,7 @@ public class AnnouncementResponseDto {
 
     private Long id;
     private String title;
+    private String producer;
     private String name;
     private String kind;
     private String directorName;
@@ -34,6 +35,7 @@ public class AnnouncementResponseDto {
     public AnnouncementResponseDto(
             Long id,
             String title,
+            String producer,
             String name,
             String kind,
             String directorName,
@@ -49,6 +51,7 @@ public class AnnouncementResponseDto {
     ){
         this.id = id;
         this.title = title;
+        this.producer = producer;
         this.name = name;
         this.kind = kind;
         this.directorName = directorName;
@@ -66,6 +69,7 @@ public class AnnouncementResponseDto {
     public AnnouncementResponseDto(Announcement announcement){
         this.id = announcement.getId();
         this.title = announcement.getTitle();
+        this.producer = announcement.getProducer();
         this.name = announcement.getName();
         this.kind = announcement.getKind();
         this.directorName = announcement.getDirectorName();
@@ -85,6 +89,7 @@ public class AnnouncementResponseDto {
         return "{" +
                 "id=" + id +
                 ", title='" + title + '\'' +
+                ", producer='" + producer + '\'' +
                 ", name='" + name + '\'' +
                 ", kind='" + kind + '\'' +
                 ", directorName='" + directorName + '\'' +

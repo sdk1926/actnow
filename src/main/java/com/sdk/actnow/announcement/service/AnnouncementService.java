@@ -60,6 +60,7 @@ public class AnnouncementService {
                 announcement -> AnnouncementResponseDto.builder()
                         .id(announcement.getId())
                         .title(announcement.getTitle())
+                        .producer(announcement.getProducer())
                         .name(announcement.getName())
                         .kind(announcement.getKind())
                         .directorName(announcement.getDirectorName())
