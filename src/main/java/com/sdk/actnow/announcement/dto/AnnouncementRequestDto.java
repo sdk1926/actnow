@@ -17,6 +17,7 @@ import java.time.LocalDate;
 public class AnnouncementRequestDto {
 
     private String title;
+    private String producer;
     private String name;
     private String kind;
     private String directorName;
@@ -35,6 +36,7 @@ public class AnnouncementRequestDto {
     @Builder
     public AnnouncementRequestDto(
             String title,
+            String producer,
             String name,
             String kind,
             String directorName,
@@ -49,6 +51,7 @@ public class AnnouncementRequestDto {
             String details
     ){
         this.title = title;
+        this.producer = producer;
         this.name = name;
         this.kind = kind;
         this.directorName = directorName;
@@ -67,6 +70,7 @@ public class AnnouncementRequestDto {
         Announcement announcement = Announcement.builder()
                 .user(user)
                 .title(this.title)
+                .producer(this.producer)
                 .name(this.name)
                 .kind(this.kind)
                 .gender(this.gender)
