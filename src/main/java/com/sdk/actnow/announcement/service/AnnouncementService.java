@@ -42,10 +42,13 @@ public class AnnouncementService {
     }
 
     @Transactional
-    public ResponseEntity findById(Long id) {
+    public ResponseEntity findById(Long id,HttpServletRequest request) {
         try {
             Announcement announcement = findAnnouncementById(id);
             AnnouncementResponseDto announcementResponseDto = new AnnouncementResponseDto(announcement);
+            if (checkAnnouncementAuthorization(announcement,request)) {
+                announcementResponseDto.setMine(true);
+            }
             return new ResponseEntity(announcementResponseDto,HttpStatus.OK);
         } catch (IllegalArgumentException e){
             log.error(e.getMessage());
@@ -75,6 +78,39 @@ public class AnnouncementService {
                         .details(announcement.getDetails())
                         .build());
         return new ResponseEntity(announcementResponseDtos,HttpStatus.OK);
+    }
+
+    @Transactional
+    public ResponseEntity findAllByUser(Pageable pageable, HttpServletRequest request) {
+        try {
+            if(!checkToken(request)) {
+                return new ResponseEntity(new Message("ANNOUNCEMENT_DOEST_NOT_EXISTS"), HttpStatus.BAD_REQUEST);
+            }
+            Users user = getUser(getSnsId(request));
+            Page<Announcement> announcements = announcementRepository.findAllByUser(pageable,user);
+            Page<AnnouncementResponseDto> announcementResponseDtos = announcements.map(
+                    announcement -> AnnouncementResponseDto.builder()
+                            .id(announcement.getId())
+                            .title(announcement.getTitle())
+                            .producer(announcement.getProducer())
+                            .name(announcement.getName())
+                            .kind(announcement.getKind())
+                            .directorName(announcement.getDirectorName())
+                            .role(announcement.getRole())
+                            .age(announcement.getAge())
+                            .shootingPeriod(announcement.getShootingPeriod())
+                            .pay(announcement.getPay())
+                            .manager(announcement.getMaanger())
+                            .email(announcement.getEmail())
+                            .gender(announcement.getGender())
+                            .deadline(announcement.getDeadline())
+                            .details(announcement.getDetails())
+                            .build());
+            return new ResponseEntity(announcementResponseDtos,HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            log.error(e.getMessage());
+            return new ResponseEntity(new Message(e.getMessage()),HttpStatus.BAD_REQUEST);
+        }
     }
 
     @Transactional
@@ -110,7 +146,21 @@ public class AnnouncementService {
 
     private boolean checkToken(HttpServletRequest request){
         String token = request.getHeader("Authorization");
+        if (token==null || token=="") return false;
         return jwt.checkClaim(token);
+    }
+
+    private boolean checkAnnouncementAuthorization(Announcement announcement, HttpServletRequest request) {
+        String token = request.getHeader("Authorization");
+        if (!(token==null||token=="")) {
+            if (checkToken(request)){
+                Users user = getUser(getSnsId(request));
+                if (announcement.getUser().equals(user)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private Long getSnsId(HttpServletRequest request){

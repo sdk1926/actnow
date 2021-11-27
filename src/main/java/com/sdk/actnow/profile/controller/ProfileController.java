@@ -25,13 +25,19 @@ public class ProfileController {
     private final ProfileService profileService;
 
     @GetMapping("/api/v1/profile/{profileId}")
-    public ResponseEntity<ProfileResponseDto> findById(@PathVariable(value = "profileId") Long profileId){
-        return profileService.findById(profileId);
+    public ResponseEntity<ProfileResponseDto> findById(@PathVariable(value = "profileId") Long profileId,
+                                                       HttpServletRequest request){
+        return profileService.findById(profileId, request);
     }
 
     @GetMapping("api/v1/profiles")
     public ResponseEntity findAll(@PageableDefault (size=10, sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
         return profileService.findAll(pageable);
+    }
+
+    @GetMapping("api/v1/profile/user")
+    public ResponseEntity<Message> checkProfileByUser(HttpServletRequest request) {
+        return profileService.checkProfileByUser(request);
     }
 
     @PostMapping("/api/v1/profile")

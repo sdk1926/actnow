@@ -16,7 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 )
 public class JwtTest {
 
-    Jwt jwt = new Jwt();
+    Jwt jwt;
 
 
     @Test

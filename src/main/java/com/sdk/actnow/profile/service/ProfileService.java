@@ -9,7 +9,6 @@ import com.sdk.actnow.s3.S3Uploader;
 import com.sdk.actnow.util.Message;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.http.protocol.HTTP;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -144,7 +143,7 @@ public class ProfileService {
     }
 
     @Transactional(readOnly = true)
-    public ResponseEntity<ProfileResponseDto> findById(long id) {
+    public ResponseEntity<ProfileResponseDto> findById(long id, HttpServletRequest request) {
         try {
             Profile profile = findProfile(id);
             List<Specialty> specialties = specialtyRepository.findAllByProfileId(id);
@@ -154,12 +153,29 @@ public class ProfileService {
                     .specialties(specialties)
                     .careers(careers)
                     .build();
+            if (checkProfileAuthorization(profile,request)) profileResponseDto.setMine(true);
             return new ResponseEntity<>(profileResponseDto, HttpStatus.OK);
         } catch (IllegalArgumentException e) {
             log.error(e.getMessage());
             return new ResponseEntity<>(new ProfileResponseDto(),HttpStatus.BAD_REQUEST);
         }
     }
+
+    @Transactional
+    public ResponseEntity<Message> checkProfileByUser(HttpServletRequest request) {
+        try {
+            if (!checkToken(request)) {
+                return new ResponseEntity(new Message("WRONG_TOKEN"), HttpStatus.BAD_REQUEST);
+            }
+            Users user = getUser(getSnsId(request));
+            Profile profile = findProfileByuser(user);
+            return new ResponseEntity<>(new Message("SUCCESS",profile.getId()), HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            log.error(e.getMessage());
+            return new ResponseEntity<>(new Message(e.getMessage()), HttpStatus.BAD_REQUEST);
+        }
+    }
+
 
     @Transactional(readOnly = true)
     public ResponseEntity findAll(Pageable pageable) {
@@ -321,11 +337,25 @@ public class ProfileService {
 
     private boolean checkToken(HttpServletRequest request){
         String token = request.getHeader("Authorization");
+        if (token==null || token=="") return false;
         return jwt.checkClaim(token);
     }
 
     private boolean checkProfileUser(Users user){
-        if (profileRepository.findByUser(user) != null) return true;
+        if (!(profileRepository.findByUser(user).isEmpty())) return true;
+        return false;
+    }
+
+    private boolean checkProfileAuthorization(Profile profile, HttpServletRequest request) {
+        String token = request.getHeader("Authorization");
+        if (!(token==null||token=="")) {
+            if (checkToken(request)){
+                Users user = getUser(getSnsId(request));
+                if (profile.getUser().equals(user)) {
+                    return true;
+                }
+            }
+        }
         return false;
     }
 
@@ -343,6 +373,12 @@ public class ProfileService {
     private Profile findProfile(Long profileId) {
         Profile profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new IllegalArgumentException("PROFILE_DOES_NOT_EXISTS_ID="+profileId));
+        return profile;
+    }
+
+    private Profile findProfileByuser(Users user) {
+        Profile profile = profileRepository.findByUser(user)
+                .orElseThrow(() -> new IllegalArgumentException("PROFILE_DOES_NOT_EXISTS_ID"));
         return profile;
     }
 

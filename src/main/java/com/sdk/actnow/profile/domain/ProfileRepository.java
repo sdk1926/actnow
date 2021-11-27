@@ -9,7 +9,6 @@ import java.util.Optional;
 
 public interface ProfileRepository extends JpaRepository<Profile,Long> {
     Page<Profile> findAll(Pageable pageable);
-    Profile findByUserId(Long id);
-    Profile findByUser(Users user);
+    Optional<Profile> findByUser(Users user);
     Optional<Profile> findById(long id);
 }
