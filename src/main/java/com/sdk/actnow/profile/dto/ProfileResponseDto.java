@@ -23,6 +23,7 @@ public class ProfileResponseDto {
     private List<ProfileImageDto> profileImages = new ArrayList<>();
     private List<SpecialtyDto> specialty = new ArrayList<>();
     private List<CareerDto> career = new ArrayList<>();
+    private boolean isMine;
 
     @Builder
     public ProfileResponseDto(Profile profile,

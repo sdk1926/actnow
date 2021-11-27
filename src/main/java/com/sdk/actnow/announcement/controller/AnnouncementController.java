@@ -29,14 +29,22 @@ public class AnnouncementController {
     }
 
     @GetMapping("/api/v1/announcement/{announcementId}")
-    public ResponseEntity findById(@PathVariable(value = "announcementId")Long announcementId) {
-        return announcementService.findById(announcementId);
+    public ResponseEntity findById(@PathVariable(value = "announcementId")Long announcementId,
+                                   HttpServletRequest request) {
+        return announcementService.findById(announcementId, request);
     }
 
-    @GetMapping("api/v1/announcement")
+    @GetMapping("/api/v1/announcement")
     public ResponseEntity findAll(@PageableDefault (size = 10, sort = "id", direction = Sort.Direction.DESC)Pageable pageable){
         return announcementService.findAll(pageable);
     }
+
+    @GetMapping("/api/v1/user/announcement")
+    public ResponseEntity findAllByUser(@PageableDefault (size = 10, sort = "id", direction = Sort.Direction.DESC)Pageable pageable,
+                                        HttpServletRequest request){
+        return announcementService.findAllByUser(pageable, request);
+    }
+
 
     @PutMapping("/api/v1/announcement/{announcementId}")
     public ResponseEntity<Message> update(@PathVariable(value = "announcementId")Long announcementId,

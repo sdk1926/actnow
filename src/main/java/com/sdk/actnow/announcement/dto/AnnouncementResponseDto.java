@@ -30,6 +30,7 @@ public class AnnouncementResponseDto {
     @JsonDeserialize(using = LocalDateDeserializer.class)
     private LocalDate deadline;
     private String details;
+    private boolean isMine;
 
     @Builder
     public AnnouncementResponseDto(
