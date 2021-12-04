@@ -8,6 +8,8 @@ import com.sdk.actnow.oauth.domain.users.Users;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 
@@ -16,6 +18,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class AnnouncementRequestDto {
 
+    @NotBlank(message = "Title cannot be empty")
     private String title;
     private String producer;
     private String name;

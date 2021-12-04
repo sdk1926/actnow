@@ -47,6 +47,7 @@ public class AnnouncementControllerTest {
         //given
         ResponseEntity<Message> response = new ResponseEntity<>(new Message("Success",3), HttpStatus.OK);
         AnnouncementRequestDto announcementRequestDto = AnnouncementRequestDto.builder()
+                .title("title")
                 .name("name")
                 .kind("kind")
                 .directorName("sohyeon")
@@ -72,6 +73,32 @@ public class AnnouncementControllerTest {
                 .andExpect(jsonPath("$.message").value("Success"));
         verify(announcementService).save(any(AnnouncementRequestDto.class),any(HttpServletRequest.class));
 
+    }
+
+    @Test
+    @DisplayName("공고_저장_DTO_입력값검사_테스트")
+    void saveAnnouncementValidationTrst() throws Exception {
+        AnnouncementRequestDto announcementRequestDto = AnnouncementRequestDto.builder()
+                .name("name")
+                .kind("kind")
+                .directorName("sohyeon")
+                .role("role")
+                .age("age")
+                .shootingPeriod("shootingPeriod")
+                .pay("pay")
+                .manager("manager")
+                .email("email")
+                .deadline(date)
+                .details("defeg")
+                .build();
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.findAndRegisterModules();
+        mvc.perform(post("/api/v1/announcement")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(announcementRequestDto))
+                .header("Authorization","fakeToken"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Title cannot be empty"));
     }
 
     @Test

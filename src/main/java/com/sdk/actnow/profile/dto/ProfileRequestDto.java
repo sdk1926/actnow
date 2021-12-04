@@ -6,6 +6,8 @@ import com.sdk.actnow.profile.domain.Specialty;
 import com.sdk.actnow.oauth.domain.users.Users;
 import lombok.*;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,7 +24,9 @@ public class ProfileRequestDto {
     private String phoneNumber;
     private String snsAddress;
     private String aboutMe;
+    @NotNull
     private List<String> specialty;
+    @NotNull
     private List<CareerDto> career;
 
     @Builder
