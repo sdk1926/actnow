@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.io.IOException;
 import java.util.List;
 
@@ -41,7 +42,7 @@ public class ProfileController {
     }
 
     @PostMapping("/api/v1/profile")
-    public ResponseEntity<Message> save(@RequestBody ProfileRequestDto profileRequestDto, HttpServletRequest requset) {
+    public ResponseEntity<Message> save(@RequestBody @Valid ProfileRequestDto profileRequestDto, HttpServletRequest requset) {
         return profileService.save(profileRequestDto,requset);
     }
 
