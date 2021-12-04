@@ -2,6 +2,7 @@ package com.sdk.actnow.announcement.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sdk.actnow.announcement.dto.AnnouncementRequestDto;
+import com.sdk.actnow.announcement.dto.AnnouncementResponseDto;
 import com.sdk.actnow.announcement.service.AnnouncementService;
 import com.sdk.actnow.util.Message;
 import org.junit.jupiter.api.DisplayName;
@@ -69,6 +70,38 @@ public class AnnouncementControllerTest {
                 .andExpect(jsonPath("$.message").value("Success"));
         verify(announcementService).save(any(AnnouncementRequestDto.class),any(HttpServletRequest.class));
 
+    }
+
+    @Test
+    @DisplayName("공고_단일_조회_컨트롤러_테스트")
+    void findOneAnnouncementTest() throws Exception {
+        // given
+        java.time.LocalDate date = LocalDate.of(2018,3,3);
+        ResponseEntity response = new ResponseEntity(AnnouncementResponseDto.builder()
+                .id(1L)
+                .title("title")
+                .producer("producer")
+                .name("name")
+                .kind("kind")
+                .directorName("directorname")
+                .role("role")
+                .age("age")
+                .shootingPeriod("shootinfperid")
+                .pay("pay")
+                .manager("manager")
+                .email("email")
+                .gender("gender")
+                .deadline(date)
+                .details("details")
+                .build(), HttpStatus.OK);
+        given(announcementService.findById(any(Long.class),any(HttpServletRequest.class))).willReturn(response);
+
+        //when
+        mvc.perform(get("/api/v1/announcement/1")
+                .header("Authorization","fakeToken"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title").value("title"));
+        verify(announcementService).findById(any(Long.class),any(HttpServletRequest.class));
     }
 
 
