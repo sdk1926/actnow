@@ -7,7 +7,18 @@
 ## 서비스 소개 
 
 - ### **영화 배우 매칭 플랫폼 액트나우 입니다.** 
+---
+## 팀원 
+### Front-end Developer
+- ### [Jack](https://github.com/JackAwesomeKim)
 
+### Back-end Developer
+- ### [팔리동](https://github.com/sdk1926)
+---
+## 프로젝트 구조 
+![](https://images.velog.io/images/sdk1926/post/b7f13ac4-f3dd-4c79-a02d-b98022c948ac/%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA%202021-12-04%20%E1%84%8B%E1%85%A9%E1%84%92%E1%85%AE%204.02.35.png)
+
+---
 ## ⚡️ Skills
 ### Back-end
 
@@ -18,7 +29,6 @@
 - **AWS S3**로 이미지 업로드 저장 공간 구축 
 
 ### Infra Structure
-
 ![](https://images.velog.io/images/sdk1926/post/a3a918ff-d9a0-4122-8fa0-4cbca63574cb/275EB23D5906E37502.png)
 - 네이버 클라우드 서버를 이용해 서버 구축 
 
