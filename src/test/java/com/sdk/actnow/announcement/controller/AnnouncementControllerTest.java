@@ -133,8 +133,37 @@ public class AnnouncementControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.email").value("email"));
         verify(announcementService).findAll(any(Pageable.class));
-
     }
 
+    @Test
+    @DisplayName("특정_유저가_쓴_공고_리스트_조회_컨트롤러_테스트")
+    void findAllByUserAnnouncementControllerTest() throws Exception {
+        // given
+        ResponseEntity<Page<AnnouncementResponseDto>> response = new ResponseEntity(AnnouncementResponseDto.builder()
+                .id(1L)
+                .title("title")
+                .producer("producer")
+                .name("name")
+                .kind("kind")
+                .directorName("directorname")
+                .role("role")
+                .age("age")
+                .shootingPeriod("shootinfperid")
+                .pay("pay")
+                .manager("manager")
+                .email("email")
+                .gender("gender")
+                .deadline(date)
+                .details("details")
+                .build(), HttpStatus.OK);
+        given(announcementService.findAllByUser(any(Pageable.class),any(HttpServletRequest.class))).willReturn(response);
+
+        //when
+        mvc.perform(get("/api/v1/user/announcement")
+                .header("Authorization","fakeToken"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.email").value("email"));
+        verify(announcementService).findAllByUser(any(Pageable.class),any(HttpServletRequest.class));
+    }
 
 }
