@@ -1,7 +1,6 @@
 package com.sdk.actnow.announcement.controller;
 
 import com.sdk.actnow.announcement.dto.AnnouncementRequestDto;
-import com.sdk.actnow.announcement.dto.AnnouncementResponseDto;
 import com.sdk.actnow.announcement.service.AnnouncementService;
 import com.sdk.actnow.util.Message;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
 
 @CrossOrigin("*")
 @Slf4j

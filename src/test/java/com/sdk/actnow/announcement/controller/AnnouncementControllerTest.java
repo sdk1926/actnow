@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 public class AnnouncementControllerTest {
 
+    static java.time.LocalDate date = LocalDate.of(2018,3,3);
     @Autowired
     MockMvc mvc;
 
@@ -43,7 +46,6 @@ public class AnnouncementControllerTest {
     void saveAnnouncementControllerTest() throws Exception{
         //given
         ResponseEntity<Message> response = new ResponseEntity<>(new Message("Success",3), HttpStatus.OK);
-        java.time.LocalDate date = LocalDate.of(2018,3,3);
         AnnouncementRequestDto announcementRequestDto = AnnouncementRequestDto.builder()
                 .name("name")
                 .kind("kind")
@@ -74,9 +76,8 @@ public class AnnouncementControllerTest {
 
     @Test
     @DisplayName("공고_단일_조회_컨트롤러_테스트")
-    void findOneAnnouncementTest() throws Exception {
+    void findOneAnnouncementControllerTest() throws Exception {
         // given
-        java.time.LocalDate date = LocalDate.of(2018,3,3);
         ResponseEntity response = new ResponseEntity(AnnouncementResponseDto.builder()
                 .id(1L)
                 .title("title")
@@ -102,6 +103,37 @@ public class AnnouncementControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title").value("title"));
         verify(announcementService).findById(any(Long.class),any(HttpServletRequest.class));
+    }
+
+    @Test
+    @DisplayName("공고_리스트_조회_컨트롤러_테스트")
+    void findAllAnnouncementControllerTest() throws Exception {
+        // given
+        ResponseEntity<Page<AnnouncementResponseDto>> response = new ResponseEntity(AnnouncementResponseDto.builder()
+                .id(1L)
+                .title("title")
+                .producer("producer")
+                .name("name")
+                .kind("kind")
+                .directorName("directorname")
+                .role("role")
+                .age("age")
+                .shootingPeriod("shootinfperid")
+                .pay("pay")
+                .manager("manager")
+                .email("email")
+                .gender("gender")
+                .deadline(date)
+                .details("details")
+                .build(), HttpStatus.OK);
+        given(announcementService.findAll(any(Pageable.class))).willReturn(response);
+
+        //when
+        mvc.perform(get("/api/v1/announcement"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.email").value("email"));
+        verify(announcementService).findAll(any(Pageable.class));
+
     }
 
 
