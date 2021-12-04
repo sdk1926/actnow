@@ -166,4 +166,36 @@ public class AnnouncementControllerTest {
         verify(announcementService).findAllByUser(any(Pageable.class),any(HttpServletRequest.class));
     }
 
+    @Test
+    @DisplayName("공고_수정_컨트롤러_테스트")
+    void updateAnnouncementControllerTest() throws Exception {
+        ResponseEntity<Message> response = new ResponseEntity<>(new Message("Success",3), HttpStatus.OK);
+        AnnouncementRequestDto announcementRequestDto = AnnouncementRequestDto.builder()
+                .name("name")
+                .kind("kind")
+                .directorName("sohyeon")
+                .role("role")
+                .age("age")
+                .shootingPeriod("shootingPeriod")
+                .pay("pay")
+                .manager("manager")
+                .email("email")
+                .deadline(date)
+                .details("defeg")
+                .build();
+        given(announcementService.update(any(Long.class),any(AnnouncementRequestDto.class),any(HttpServletRequest.class))).willReturn(response);
+
+        //when
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.findAndRegisterModules();
+
+        //when
+        mvc.perform(put("/api/v1/announcement/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(announcementRequestDto))
+                .header("Authorization","fakeToken"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("Success"));
+        verify(announcementService).update(any(Long.class),any(AnnouncementRequestDto.class),any(HttpServletRequest.class));
+    }
 }
