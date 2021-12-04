@@ -169,7 +169,7 @@ public class AnnouncementControllerTest {
     @Test
     @DisplayName("공고_수정_컨트롤러_테스트")
     void updateAnnouncementControllerTest() throws Exception {
-        ResponseEntity<Message> response = new ResponseEntity<>(new Message("Success",3), HttpStatus.OK);
+        ResponseEntity<Message> response = new ResponseEntity<>(new Message("Success",1), HttpStatus.OK);
         AnnouncementRequestDto announcementRequestDto = AnnouncementRequestDto.builder()
                 .name("name")
                 .kind("kind")
@@ -184,8 +184,6 @@ public class AnnouncementControllerTest {
                 .details("defeg")
                 .build();
         given(announcementService.update(any(Long.class),any(AnnouncementRequestDto.class),any(HttpServletRequest.class))).willReturn(response);
-
-        //when
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
 
@@ -195,7 +193,24 @@ public class AnnouncementControllerTest {
                 .content(objectMapper.writeValueAsString(announcementRequestDto))
                 .header("Authorization","fakeToken"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("Success"));
+                .andExpect(jsonPath("$.message").value("Success"))
+                .andExpect(jsonPath("$.id").value(1));
         verify(announcementService).update(any(Long.class),any(AnnouncementRequestDto.class),any(HttpServletRequest.class));
+    }
+
+    @Test
+    @DisplayName("공고_삭제_컨트롤러_테스트")
+    void deleteAnnouncementControllerTest() throws Exception {
+        // given
+        ResponseEntity<Message> response = new ResponseEntity<>(new Message("Success",3), HttpStatus.OK);
+        given(announcementService.delete(any(Long.class),any(HttpServletRequest.class))).willReturn(response);
+
+        // when
+        mvc.perform(delete("/api/v1/announcement/1")
+                .header("Authorization","fakeToken"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("Success"))
+                .andExpect(jsonPath("$.id").value(3));
+        verify(announcementService).delete(any(Long.class),any(HttpServletRequest.class));
     }
 }
