@@ -53,7 +53,7 @@ public class ProfileResponseDto {
                 this.career.add(CareerDto.builder()
                         .id(c.getId())
                         .name(c.getName())
-                        .role(c.getCategory())
+                        .role(c.getRole())
                         .category(c.getCategory())
                         .year(c.getYear())
                         .build());
